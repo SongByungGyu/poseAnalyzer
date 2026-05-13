@@ -3003,6 +3003,7 @@ git commit -m "feat(data): add UserProfileRepository with TDD (single instance h
 - [ ] **Step 1: AppDependencies.swift 작성**
 
 ```swift
+import Combine
 import Foundation
 import SwiftData
 import UIKit
