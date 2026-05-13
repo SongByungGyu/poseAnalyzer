@@ -1,32 +1,16 @@
-//
-//  PoseAnalyzerApp.swift
-//  PoseAnalyzer
-//
-//  Created by ByungGyu Song on 5/13/26.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct PoseAnalyzerApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @StateObject private var dependencies = AppDependencies()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootPlaceholderView()
+                .environmentObject(dependencies)
+                .modelContainer(dependencies.modelContainer)
         }
-        .modelContainer(sharedModelContainer)
     }
 }
