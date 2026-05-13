@@ -6,6 +6,8 @@ struct HomeView: View {
 
     @Environment(\.dependencies) private var dependencies
     @State private var viewModel: HomeViewModel?
+    @State private var latestReport: SessionReport?
+    @State private var showResult: Bool = false
 
     var body: some View {
         ScrollView {
@@ -31,10 +33,17 @@ struct HomeView: View {
             get: { viewModel?.isWizardPresented ?? false },
             set: { viewModel?.isWizardPresented = $0 }
         )) {
-            // Plan 2b Task 9에서 MeasurementWizardView로 교체
-            Text("측정 마법사 (Task 9 이후)")
-                .padding()
-                .presentationDetents([.large])
+            MeasurementWizardView { report in
+                // 분석 완료: 결과 화면으로 push
+                latestReport = report
+                showResult = true
+            }
+            .presentationDetents([.large])
+        }
+        .navigationDestination(isPresented: $showResult) {
+            if let report = latestReport {
+                ResultPlaceholderView(report: report)
+            }
         }
     }
 
