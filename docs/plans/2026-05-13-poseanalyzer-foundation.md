@@ -1073,7 +1073,7 @@ final class ForwardHeadEvaluator: PostureEvaluator {
             primaryMetric: angle,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: joints.map { String($0.rawValue) },
+            usedJointNames: joints.map { $0.rawValue.rawValue },
             confidence: useRight ? rightConf : leftConf,
             advice: status == .normal ? nil : "장시간 고개를 숙이지 마시고, 모니터 높이를 눈높이로 맞춰주세요."
         )
@@ -1328,7 +1328,7 @@ final class KyphosisEvaluator: PostureEvaluator {
             primaryMetric: angle,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: joints.map { String($0.rawValue) },
+            usedJointNames: joints.map { $0.rawValue.rawValue },
             confidence: useRight ? rightConf : leftConf,
             advice: status == .normal ? nil : "흉추 신전 스트레칭(폼롤러)을 권장합니다."
         )
@@ -1447,7 +1447,7 @@ final class AnteriorPelvicTiltEvaluator: PostureEvaluator {
             primaryMetric: angle,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: joints.map { String($0.rawValue) },
+            usedJointNames: joints.map { $0.rawValue.rawValue },
             confidence: useRight ? rightConf : leftConf,
             advice: status == .normal ? nil : "\(direction). 코어 강화와 골반 정렬 운동을 권장합니다."
         )
@@ -1556,7 +1556,7 @@ final class KneeHyperextensionEvaluator: PostureEvaluator {
             primaryMetric: angle,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: joints.map { String($0.rawValue) },
+            usedJointNames: joints.map { $0.rawValue.rawValue },
             confidence: useRight ? rightConf : leftConf,
             advice: status == .normal ? nil : "서 있을 때 무릎을 살짝 굽혀 정렬을 유지해보세요."
         )
@@ -1685,7 +1685,7 @@ final class ScoliosisEvaluator: PostureEvaluator {
             primaryMetric: primary,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: needed.map { String($0.rawValue) },
+            usedJointNames: needed.map { $0.rawValue.rawValue },
             confidence: frame.averageConfidence(needed),
             advice: status == .normal ? nil : "어깨 기울기 \(String(format: "%.1f", shoulderTilt))° / 골반 기울기 \(String(format: "%.1f", hipTilt))°. 전문가 상담을 권장합니다."
         )
@@ -1951,7 +1951,7 @@ final class KneeAlignmentEvaluator: PostureEvaluator {
             primaryMetric: primary,
             primaryMetricUnit: .degree,
             thresholds: thresholds,
-            usedJointNames: (leftJoints + rightJoints).map { String($0.rawValue) },
+            usedJointNames: (leftJoints + rightJoints).map { $0.rawValue.rawValue },
             confidence: frame.averageConfidence(leftJoints + rightJoints),
             advice: status == .normal ? nil : "\(pattern). 좌측 \(String(format: "%.0f", leftAngle))° / 우측 \(String(format: "%.0f", rightAngle))°"
         )
