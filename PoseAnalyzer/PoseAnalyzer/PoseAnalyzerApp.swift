@@ -10,6 +10,7 @@ struct PoseAnalyzerApp: App {
         WindowGroup {
             AppTabView()
                 .environmentObject(dependencies)
+                .environment(\.dependencies, dependencies)
                 .modelContainer(dependencies.modelContainer)
         }
     }

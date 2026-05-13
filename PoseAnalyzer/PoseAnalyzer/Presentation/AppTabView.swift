@@ -13,7 +13,7 @@ struct AppTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // 측정 탭 (Plan 2b에서 채움)
-            MeasurementTabPlaceholder()
+            HomeView()
                 .tabItem {
                     Image(systemName: "camera.fill")
                     Text("측정")
@@ -29,23 +29,6 @@ struct AppTabView: View {
                 .tag(Tab.history)
         }
         .tint(Color.brandPrimary)
-    }
-}
-
-/// 측정 탭 임시 화면 (Plan 2b에서 HomeView 등으로 교체)
-private struct MeasurementTabPlaceholder: View {
-    var body: some View {
-        NavigationStack {
-            VStack {
-                AppEmptyState(
-                    icon: "figure.stand",
-                    title: "측정 화면",
-                    message: "Plan 2b에서 작성됩니다."
-                )
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.bgCanvas)
-        }
     }
 }
 
