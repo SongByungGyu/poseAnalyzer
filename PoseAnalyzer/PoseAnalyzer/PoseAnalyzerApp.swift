@@ -8,7 +8,7 @@ struct PoseAnalyzerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootPlaceholderView()
+            AppTabView()
                 .environmentObject(dependencies)
                 .modelContainer(dependencies.modelContainer)
         }
