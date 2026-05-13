@@ -21,7 +21,9 @@ struct AppTabView: View {
                 .tag(Tab.measurement)
 
             // 기록 탭 (Plan 2c에서 채움)
-            HistoryTabPlaceholder()
+            NavigationStack {
+                HistoryListView()
+            }
                 .tabItem {
                     Image(systemName: "chart.bar.fill")
                     Text("기록")
@@ -29,21 +31,6 @@ struct AppTabView: View {
                 .tag(Tab.history)
         }
         .tint(Color.brandPrimary)
-    }
-}
-
-/// 기록 탭 임시 화면 (Plan 2c에서 HistoryListView로 교체)
-private struct HistoryTabPlaceholder: View {
-    var body: some View {
-        NavigationStack {
-            AppEmptyState(
-                icon: "chart.bar.fill",
-                title: "기록 화면",
-                message: "Plan 2c에서 작성됩니다."
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.bgCanvas)
-        }
     }
 }
 
