@@ -42,7 +42,7 @@ struct HomeView: View {
         }
         .navigationDestination(isPresented: $showResult) {
             if let report = latestReport {
-                ResultPlaceholderView(report: report)
+                AnalysisResultView(report: report)
             }
         }
     }
