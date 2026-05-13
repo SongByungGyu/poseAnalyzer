@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Neutral scale</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .scale { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+  .step {
+    height: 80px;
+    border-radius: 10px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 6px 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+  .step .name { font-family: var(--font-sans); font-size: 11px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="scale">
+    <div class="step" style="background:#F7F8FA;color:#4F5868;border:1px solid #EEF1F5"><span class="name">50</span><span>#F7F8FA</span></div>
+    <div class="step" style="background:#EEF1F5;color:#4F5868"><span class="name">100</span><span>#EEF1F5</span></div>
+    <div class="step" style="background:#E2E6EE;color:#353D4B"><span class="name">200</span><span>#E2E6EE</span></div>
+    <div class="step" style="background:#CBD2DE;color:#353D4B"><span class="name">300</span><span>#CBD2DE</span></div>
+    <div class="step" style="background:#A2ABBC;color:#fff"><span class="name">400</span><span>#A2ABBC</span></div>
+    <div class="step" style="background:#707A8E;color:#fff"><span class="name">500</span><span>#707A8E</span></div>
+    <div class="step" style="background:#4F5868;color:#fff"><span class="name">600</span><span>#4F5868</span></div>
+    <div class="step" style="background:#353D4B;color:#fff"><span class="name">700</span><span>#353D4B</span></div>
+    <div class="step" style="background:#1F2532;color:#fff"><span class="name">800</span><span>#1F2532</span></div>
+    <div class="step" style="background:#11151E;color:#fff"><span class="name">900</span><span>#11151E</span></div>
+  </div>
+</div>
+</body></html>

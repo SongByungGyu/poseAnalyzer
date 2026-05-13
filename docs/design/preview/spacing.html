@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Spacing scale</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 24px; }
+  .bars { display: flex; flex-direction: column; gap: 8px; }
+  .bar { display: flex; align-items: center; gap: 12px; }
+  .bar .token { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); width: 56px; flex: none; }
+  .bar .fill { height: 14px; background: #3B5BDB; border-radius: 4px; }
+  .bar .px { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bars">
+    <div class="bar"><span class="token">--s-1</span><span class="fill" style="width:4px"></span><span class="px">4</span></div>
+    <div class="bar"><span class="token">--s-2</span><span class="fill" style="width:8px"></span><span class="px">8</span></div>
+    <div class="bar"><span class="token">--s-3</span><span class="fill" style="width:12px"></span><span class="px">12</span></div>
+    <div class="bar"><span class="token">--s-4</span><span class="fill" style="width:16px"></span><span class="px">16 · default card inset</span></div>
+    <div class="bar"><span class="token">--s-5</span><span class="fill" style="width:20px"></span><span class="px">20</span></div>
+    <div class="bar"><span class="token">--s-6</span><span class="fill" style="width:24px"></span><span class="px">24 · section gutter</span></div>
+    <div class="bar"><span class="token">--s-7</span><span class="fill" style="width:32px"></span><span class="px">32</span></div>
+    <div class="bar"><span class="token">--s-8</span><span class="fill" style="width:40px"></span><span class="px">40</span></div>
+    <div class="bar"><span class="token">--s-9</span><span class="fill" style="width:56px"></span><span class="px">56</span></div>
+    <div class="bar"><span class="token">--s-10</span><span class="fill" style="width:72px"></span><span class="px">72</span></div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Status badges</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 24px; }
+  .row-b { display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 999px;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+  }
+  .badge .dot { width: 8px; height: 8px; border-radius: 999px; }
+  .badge.normal  { background: #E3F4EC; color: #15784E; }
+  .badge.normal  .dot { background: #22A06B; }
+  .badge.caution { background: #FBF1D2; color: #8B6904; }
+  .badge.caution .dot { background: #D9A106; }
+  .badge.suspect { background: #FBE5D7; color: #A94714; }
+  .badge.suspect .dot { background: #E0683A; }
+  .badge.unknown { background: #ECEEF2; color: #4F5868; }
+  .badge.unknown .dot { background: #8A94A6; }
+  .badge.large { font-size: 14px; padding: 7px 14px; }
+  .badge.large .dot { width: 10px; height: 10px; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">PILL · DEFAULT</div>
+  <div class="row-b" style="margin-bottom:14px">
+    <span class="badge normal"><span class="dot"></span>정상</span>
+    <span class="badge caution"><span class="dot"></span>주의</span>
+    <span class="badge suspect"><span class="dot"></span>의심</span>
+    <span class="badge unknown"><span class="dot"></span>측정 불가</span>
+  </div>
+  <div class="label">PILL · LARGE</div>
+  <div class="row-b">
+    <span class="badge normal large"><span class="dot"></span>정상</span>
+    <span class="badge caution large"><span class="dot"></span>주의</span>
+    <span class="badge suspect large"><span class="dot"></span>의심</span>
+    <span class="badge unknown large"><span class="dot"></span>측정 불가</span>
+  </div>
+</div>
+</body></html>

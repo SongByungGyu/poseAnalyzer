@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Surface tokens</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .grid { grid-template-columns: 1fr 1fr; }
+  .sample {
+    border-radius: 16px;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 150px;
+  }
+  .sample .label { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .sample .hex { font-family: var(--font-mono); font-size: 12px; }
+  .light { background:#F4F6FA; color:#0F1B2D; border:1px solid #E2E6EE; }
+  .light .inner { background:#FFF; border-radius: 12px; padding: 10px; border:1px solid #E2E6EE; }
+  .light .inner2 { background:#F7F8FA; border-radius: 8px; padding: 8px; }
+  .dark { background:#0B0F18; color:#F2F4F8; border:1px solid #232A38; }
+  .dark .inner { background:#161B26; border-radius: 12px; padding: 10px; border:1px solid #232A38; }
+  .dark .inner2 { background:#1F2532; border-radius: 8px; padding: 8px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="grid">
+    <div class="sample light">
+      <div>
+        <div class="label muted">light · bg-canvas</div>
+        <div class="hex">#F4F6FA</div>
+      </div>
+      <div class="inner">
+        <div class="label muted">bg-surface · #FFFFFF</div>
+        <div class="inner2 muted" style="font-size:11px;font-family:var(--font-mono);margin-top:6px">bg-surface-2 · #F7F8FA</div>
+      </div>
+    </div>
+    <div class="sample dark">
+      <div>
+        <div class="label" style="color:#8A94A6">dark · bg-canvas</div>
+        <div class="hex">#0B0F18</div>
+      </div>
+      <div class="inner">
+        <div class="label" style="color:#8A94A6">bg-surface · #161B26</div>
+        <div class="inner2" style="font-size:11px;font-family:var(--font-mono);margin-top:6px;color:#8A94A6">bg-surface-2 · #1F2532</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

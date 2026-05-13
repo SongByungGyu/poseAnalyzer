@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Radii</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 24px; }
+  .row-r { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; align-items: end; }
+  .ex { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .box {
+    width: 84px; height: 84px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-1);
+    box-shadow: var(--shadow-card);
+  }
+  .label { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); text-align: center; }
+  .label b { color: var(--fg-1); font-weight: 700; font-family: var(--font-sans); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row-r">
+    <div class="ex"><div class="box" style="border-radius:6px"></div><div class="label"><b>--r-xs</b><br>6 · chip</div></div>
+    <div class="ex"><div class="box" style="border-radius:10px"></div><div class="label"><b>--r-sm</b><br>10 · badge</div></div>
+    <div class="ex"><div class="box" style="border-radius:14px"></div><div class="label"><b>--r-md</b><br>14 · button</div></div>
+    <div class="ex"><div class="box" style="border-radius:20px"></div><div class="label"><b>--r-lg</b><br>20 · card</div></div>
+    <div class="ex"><div class="box" style="border-radius:28px"></div><div class="label"><b>--r-xl</b><br>28 · sheet</div></div>
+    <div class="ex"><div class="box" style="border-radius:999px"></div><div class="label"><b>pill</b><br>999 · status</div></div>
+  </div>
+</div>
+</body></html>

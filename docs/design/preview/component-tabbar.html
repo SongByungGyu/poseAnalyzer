@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Tab bar</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 20px 24px; background: var(--bg-canvas); }
+  .frame {
+    width: 360px; margin: 0 auto;
+    background:
+      linear-gradient(180deg, rgba(244,246,250,0) 0%, rgba(244,246,250,1) 30%),
+      repeating-linear-gradient(180deg, #E2E6EE 0 1px, transparent 1px 14px),
+      var(--bg-canvas);
+    height: 180px;
+    border-radius: 26px;
+    border: 1px solid var(--border-1);
+    position: relative;
+    overflow: hidden;
+  }
+  .tabs {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid var(--border-1);
+    height: 78px;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 6px 0 22px;
+  }
+  .tab {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--fg-3); font-size: 11px; font-weight: 600;
+  }
+  .tab.on { color: #3B5BDB; }
+  .tab svg { width: 26px; height: 26px; }
+</style>
+</head>
+<body>
+<svg style="display:none">
+  <symbol id="cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="bar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></symbol>
+</svg>
+<div class="card">
+  <div class="frame">
+    <div class="tabs">
+      <div class="tab on">
+        <svg><use href="#cam"/></svg>
+        측정
+      </div>
+      <div class="tab">
+        <svg><use href="#bar"/></svg>
+        기록
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

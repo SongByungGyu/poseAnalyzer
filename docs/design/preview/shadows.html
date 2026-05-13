@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Shadow elevation</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 32px 24px; background: var(--bg-canvas); }
+  .row-s { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: end; }
+  .ex { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .box {
+    width: 168px; height: 96px;
+    background: var(--bg-surface);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--fg-3);
+  }
+  .none  { box-shadow: none; border: 1px solid var(--border-1); }
+  .pop   { box-shadow: 0 4px 12px rgba(15,27,45,0.08), 0 12px 32px rgba(15,27,45,0.10); }
+  .card-s{ box-shadow: 0 1px 2px rgba(15,27,45,0.04), 0 4px 16px rgba(15,27,45,0.05); }
+  .label { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); text-align: center; }
+  .label b { color: var(--fg-1); font-weight: 700; font-family: var(--font-sans); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row-s">
+    <div class="ex"><div class="box none">flat</div><div class="label"><b>none</b><br>history rows · dividers</div></div>
+    <div class="ex"><div class="box card-s">--shadow-card</div><div class="label"><b>--shadow-card</b><br>cards · result tiles</div></div>
+    <div class="ex"><div class="box pop">--shadow-pop</div><div class="label"><b>--shadow-pop</b><br>sheets · menus</div></div>
+  </div>
+</div>
+</body></html>

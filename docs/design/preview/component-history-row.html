@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>History row</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 20px 24px; }
+  .rows { display: flex; flex-direction: column; gap: 10px; }
+  .row-h {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-1);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .thumbs { display: flex; gap: 4px; flex: none; }
+  .thumb {
+    width: 48px; height: 64px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #CBD2DE 0%, #A2ABBC 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .thumb::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 50% 22%, #707A8E 0 6px, transparent 7px),
+      linear-gradient(180deg, transparent 30%, #707A8E 30% 32%, transparent 32%);
+    opacity: 0.7;
+  }
+  .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .top { display: flex; align-items: baseline; justify-content: space-between; }
+  .date { font-size: 14px; font-weight: 600; color: var(--fg-1); }
+  .time { font-size: 12px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+  .dots { display: flex; gap: 4px; }
+  .ds { width: 9px; height: 9px; border-radius: 999px; }
+  .delta {
+    font-family: var(--font-numeric); font-size: 12px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .delta.up   { color: #22A06B; }
+  .delta.down { color: #E0683A; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rows">
+    <div class="row-h">
+      <div class="thumbs"><div class="thumb"></div><div class="thumb"></div></div>
+      <div class="body">
+        <div class="top">
+          <span class="date">2026.05.13 화</span>
+          <span class="time">19:24</span>
+        </div>
+        <div class="dots">
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#D9A106"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#E0683A"></span>
+          <span class="ds" style="background:#22A06B"></span>
+        </div>
+        <span class="delta up">직전 대비 +2° 개선 · forwardHead</span>
+      </div>
+    </div>
+    <div class="row-h">
+      <div class="thumbs"><div class="thumb"></div><div class="thumb"></div></div>
+      <div class="body">
+        <div class="top">
+          <span class="date">2026.05.06 화</span>
+          <span class="time">08:11</span>
+        </div>
+        <div class="dots">
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#D9A106"></span>
+          <span class="ds" style="background:#D9A106"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#22A06B"></span>
+          <span class="ds" style="background:#8A94A6"></span>
+          <span class="ds" style="background:#E0683A"></span>
+          <span class="ds" style="background:#22A06B"></span>
+        </div>
+        <span class="delta down">직전 대비 −3° 악화 · roundShoulder</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

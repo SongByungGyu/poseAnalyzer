@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Brand palette</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 28px 24px; }
+  .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .swatch {
+    border-radius: 14px;
+    padding: 14px 14px 12px;
+    color: var(--fg-on-brand);
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 112px;
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-card);
+  }
+  .swatch .name { font-size: 13px; font-weight: 600; letter-spacing: -0.005em; }
+  .swatch .hex  { font-family: var(--font-mono); font-size: 12px; opacity: 0.85; }
+  .swatch .role { font-size: 11px; opacity: 0.78; margin-top: 2px; }
+  .ink     { background: #0F1B2D; }
+  .indigo  { background: #3B5BDB; }
+  .indigo-soft { background: #E6EBFB; color: #2A47C3; }
+  .accent  { background: #5B6EE8; }
+  .mint    { background: #56BAB0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="palette">
+    <div class="swatch indigo">
+      <div class="name">Pose Indigo</div>
+      <div>
+        <div class="hex">#3B5BDB</div>
+        <div class="role">brand-primary · CTA</div>
+      </div>
+    </div>
+    <div class="swatch accent">
+      <div class="name">Accent</div>
+      <div>
+        <div class="hex">#5B6EE8</div>
+        <div class="role">brand-accent · highlights</div>
+      </div>
+    </div>
+    <div class="swatch mint">
+      <div class="name">Mint</div>
+      <div>
+        <div class="hex">#56BAB0</div>
+        <div class="role">joint overlays · progress</div>
+      </div>
+    </div>
+    <div class="swatch ink">
+      <div class="name">Ink</div>
+      <div>
+        <div class="hex">#0F1B2D</div>
+        <div class="role">brand-ink · fg-1</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

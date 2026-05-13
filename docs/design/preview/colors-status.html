@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Status palette</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat {
+    border-radius: 14px;
+    padding: 14px 14px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-1);
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 124px;
+  }
+  .dot { width: 14px; height: 14px; border-radius: 999px; }
+  .stat .ko { font-size: 15px; font-weight: 700; letter-spacing: -0.005em; }
+  .stat .en { font-size: 11px; font-weight: 500; color: var(--fg-3); margin-top: -2px; }
+  .stat .hex { font-family: var(--font-mono); font-size: 12px; color: var(--fg-2); margin-top: auto; }
+  .stat .bg-sample {
+    padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    align-self: flex-start;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="grid">
+    <div class="stat">
+      <div class="row"><span class="dot" style="background:#22A06B"></span><span class="ko">정상</span></div>
+      <div class="en">normal · 🟢</div>
+      <div class="bg-sample" style="background:#E3F4EC;color:#22A06B">170° · normal</div>
+      <div class="hex">#22A06B</div>
+    </div>
+    <div class="stat">
+      <div class="row"><span class="dot" style="background:#D9A106"></span><span class="ko">주의</span></div>
+      <div class="en">caution · 🟡</div>
+      <div class="bg-sample" style="background:#FBF1D2;color:#9C7405">164° · caution</div>
+      <div class="hex">#D9A106</div>
+    </div>
+    <div class="stat">
+      <div class="row"><span class="dot" style="background:#E0683A"></span><span class="ko">의심</span></div>
+      <div class="en">suspect · 🟠</div>
+      <div class="bg-sample" style="background:#FBE5D7;color:#B14817">152° · suspect</div>
+      <div class="hex">#E0683A</div>
+    </div>
+    <div class="stat">
+      <div class="row"><span class="dot" style="background:#8A94A6"></span><span class="ko">측정 불가</span></div>
+      <div class="en">unmeasurable · ⚪</div>
+      <div class="bg-sample" style="background:#ECEEF2;color:#4F5868">— · 측정 불가</div>
+      <div class="hex">#8A94A6</div>
+    </div>
+  </div>
+</div>
+</body></html>

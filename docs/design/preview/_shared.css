@@ -1,0 +1,29 @@
+/* Shared styles for preview cards in the Design System tab.
+   Cards are ~700px wide; height varies. Background is bg-canvas so cards
+   read as samples of the actual design surface. */
+
+@import url("../colors_and_type.css");
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-canvas);
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+}
+
+.card {
+  width: 700px;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--bg-canvas);
+}
+
+.row { display: flex; gap: 12px; align-items: center; }
+.col { display: flex; flex-direction: column; gap: 12px; }
+.grid { display: grid; gap: 12px; }
+.muted { color: var(--fg-3); }
+.tag {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--fg-3);
+}

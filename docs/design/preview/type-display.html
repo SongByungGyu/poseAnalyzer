@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Type scale — display</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 20px 24px; }
+  .row-spec { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--border-2); }
+  .row-spec:last-child { border-bottom: none; }
+  .row-spec .tok { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); width: 96px; flex: none; }
+  .row-spec .specimen { flex: 1; }
+  .row-spec .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row-spec">
+    <div class="tok">.t-display</div>
+    <div class="specimen t-display">PoseAnalyzer 자세를 본다</div>
+    <div class="meta">34/41 · 700 · -0.022em</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">.t-h1</div>
+    <div class="specimen t-h1">오늘의 분석 결과</div>
+    <div class="meta">28/34 · 700</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">.t-h2</div>
+    <div class="specimen t-h2">거북목 · 주의</div>
+    <div class="meta">22/28 · 700</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">.t-h3</div>
+    <div class="specimen t-h3">최근 측정 (7일)</div>
+    <div class="meta">18/24 · 600</div>
+  </div>
+</div>
+</body></html>

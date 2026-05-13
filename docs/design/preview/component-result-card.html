@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Posture result card</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 20px 24px; background: var(--bg-canvas); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    background: var(--bg-surface);
+    border-radius: 18px;
+    border: 1px solid var(--border-1);
+    box-shadow: 0 1px 2px rgba(15,27,45,0.04), 0 4px 14px rgba(15,27,45,0.04);
+    padding: 16px 16px 14px 22px;
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .tile::before {
+    content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px;
+    border-radius: 0 4px 4px 0;
+  }
+  .tile.normal::before  { background: #22A06B; }
+  .tile.caution::before { background: #D9A106; }
+  .tile.suspect::before { background: #E0683A; }
+  .tile.unknown::before { background: #8A94A6; }
+
+  .head { display: flex; align-items: center; justify-content: space-between; }
+  .head .title { font-size: 15px; font-weight: 700; letter-spacing: -0.005em; color: var(--fg-1); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .badge .dot { width: 7px; height: 7px; border-radius: 999px; }
+  .badge.normal  { background: #E3F4EC; color: #15784E; }
+  .badge.normal  .dot { background: #22A06B; }
+  .badge.caution { background: #FBF1D2; color: #8B6904; }
+  .badge.caution .dot { background: #D9A106; }
+  .badge.suspect { background: #FBE5D7; color: #A94714; }
+  .badge.suspect .dot { background: #E0683A; }
+  .badge.unknown { background: #ECEEF2; color: #4F5868; }
+  .badge.unknown .dot { background: #8A94A6; }
+
+  .metric { font-family: var(--font-numeric); font-weight: 700; font-size: 30px; letter-spacing: -0.024em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .metric small { font-size: 14px; font-weight: 600; color: var(--fg-3); margin-left: 4px; }
+  .meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--fg-3); }
+
+  .gauge { height: 4px; background: var(--gray-100); border-radius: 4px; position: relative; overflow: hidden; }
+  .gauge .seg {
+    position: absolute; top: 0; bottom: 0;
+    background: linear-gradient(90deg, #22A06B 0 33%, #D9A106 33% 66%, #E0683A 66% 100%);
+    width: 100%; opacity: 0.25;
+  }
+  .gauge .marker {
+    position: absolute; top: -3px; width: 3px; height: 10px; border-radius: 2px; background: var(--fg-1);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="grid">
+    <div class="tile normal">
+      <div class="head">
+        <div class="title">거북목</div>
+        <span class="badge normal"><span class="dot"></span>정상</span>
+      </div>
+      <div class="metric">172<small>°</small></div>
+      <div class="gauge"><div class="seg"></div><div class="marker" style="left:18%"></div></div>
+      <div class="meta"><span>ear–shoulder–hip</span><span>conf 0.91</span></div>
+    </div>
+    <div class="tile caution">
+      <div class="head">
+        <div class="title">라운드숄더</div>
+        <span class="badge caution"><span class="dot"></span>주의</span>
+      </div>
+      <div class="metric">0.21<small> ratio</small></div>
+      <div class="gauge"><div class="seg"></div><div class="marker" style="left:58%"></div></div>
+      <div class="meta"><span>shoulder/ear · norm</span><span>conf 0.83</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,278 @@
+/* =============================================================================
+   PoseAnalyzer — Color & Type Foundations
+   -----------------------------------------------------------------------------
+   Korean-language iOS app. Visual direction invented from a functional spec
+   (no existing visual code). Aligned with Apple HIG conventions but with a
+   calmer, slightly warmer wellness identity than stock iOS.
+   ============================================================================= */
+
+/* ── Fonts ─────────────────────────────────────────────────────────────────── */
+/* Pretendard is the canonical Korean-optimized sans for iOS-style UI. */
+/* Self-hosted woff2 (subset) lives in fonts/. CDN fallback also wired below. */
+
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/Pretendard-Regular.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/Pretendard-Medium.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/Pretendard-SemiBold.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/Pretendard-Bold.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fonts/Pretendard-ExtraBold.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-ExtraBold.woff2") format("woff2");
+}
+
+/* ── Tokens ───────────────────────────────────────────────────────────────── */
+
+:root {
+  /* — Brand — */
+  --brand-ink:        #0F1B2D;   /* deep navy — wordmark, primary text on light */
+  --brand-primary:    #3B5BDB;   /* Pose Indigo — primary CTA, links, focus */
+  --brand-primary-press: #2A47C3;
+  --brand-primary-soft:  #E6EBFB; /* tinted bg for selected states */
+  --brand-accent:     #5B6EE8;   /* gentle violet-indigo for highlights */
+  --brand-mint:       #56BAB0;   /* secondary accent — wellness/progress */
+
+  /* — Status (judgment scale) — */
+  /* Maps to spec: 정상 / 주의 / 의심 / 측정 불가  →  🟢 🟡 🟠 ⚪ */
+  --status-normal:     #22A06B;  /* 정상 — calm green, not neon */
+  --status-normal-bg:  #E3F4EC;
+  --status-caution:    #D9A106;  /* 주의 — amber */
+  --status-caution-bg: #FBF1D2;
+  --status-suspect:    #E0683A;  /* 의심 — burnt orange, not red */
+  --status-suspect-bg: #FBE5D7;
+  --status-unknown:    #8A94A6;  /* 측정 불가 — neutral gray */
+  --status-unknown-bg: #ECEEF2;
+
+  /* — Neutrals (warm-cool slate) — */
+  --gray-50:  #F7F8FA;
+  --gray-100: #EEF1F5;
+  --gray-200: #E2E6EE;
+  --gray-300: #CBD2DE;
+  --gray-400: #A2ABBC;
+  --gray-500: #707A8E;
+  --gray-600: #4F5868;
+  --gray-700: #353D4B;
+  --gray-800: #1F2532;
+  --gray-900: #11151E;
+
+  /* — Surfaces (light mode default) — */
+  --bg-canvas:   #F4F6FA;    /* app background (tinted, warmer than pure gray) */
+  --bg-surface:  #FFFFFF;    /* card / sheet */
+  --bg-surface-2:#F7F8FA;    /* nested card */
+  --bg-overlay:  rgba(15, 27, 45, 0.45);
+  --bg-tint:     rgba(59, 91, 219, 0.06); /* brand-tinted selection */
+
+  /* — Foregrounds — */
+  --fg-1: #0F1B2D;   /* primary text */
+  --fg-2: #4F5868;   /* secondary text */
+  --fg-3: #707A8E;   /* tertiary / caption */
+  --fg-4: #A2ABBC;   /* disabled */
+  --fg-on-brand: #FFFFFF;
+  --fg-on-status: #FFFFFF;
+
+  /* — Borders / dividers — */
+  --border-1: #E2E6EE;    /* default card border */
+  --border-2: #EEF1F5;    /* hairline divider inside surfaces */
+  --border-strong: #CBD2DE;
+  --border-focus: var(--brand-primary);
+
+  /* — Shadows — iOS-feeling soft elevation, never harsh */
+  --shadow-card: 0 1px 2px rgba(15, 27, 45, 0.04),
+                 0 4px 16px rgba(15, 27, 45, 0.05);
+  --shadow-pop:  0 4px 12px rgba(15, 27, 45, 0.08),
+                 0 12px 32px rgba(15, 27, 45, 0.10);
+  --shadow-press:inset 0 1px 2px rgba(15, 27, 45, 0.08);
+
+  /* — Radii — iOS family — */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* — Spacing — 4pt scale, iOS-friendly — */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 56px;
+  --s-10:72px;
+
+  /* — Motion — */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-med:  220ms;
+  --dur-slow: 360ms;
+
+  /* — Type families — */
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+               "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --font-numeric: "Pretendard", "SF Pro Display", -apple-system, sans-serif;
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-canvas:    #0B0F18;
+    --bg-surface:   #161B26;
+    --bg-surface-2: #1F2532;
+    --bg-overlay:   rgba(0, 0, 0, 0.55);
+    --bg-tint:      rgba(91, 110, 232, 0.12);
+
+    --fg-1: #F2F4F8;
+    --fg-2: #B4BCCB;
+    --fg-3: #8A94A6;
+    --fg-4: #5C6577;
+
+    --border-1: #232A38;
+    --border-2: #1F2532;
+    --border-strong: #353D4B;
+
+    --brand-primary-soft: rgba(91, 110, 232, 0.18);
+    --status-normal-bg:   rgba(34, 160, 107, 0.18);
+    --status-caution-bg:  rgba(217, 161, 6, 0.18);
+    --status-suspect-bg:  rgba(224, 104, 58, 0.18);
+    --status-unknown-bg:  rgba(138, 148, 166, 0.18);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4),
+                   0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-pop:  0 8px 32px rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* Manual override for previews */
+[data-theme="dark"] {
+  --bg-canvas:    #0B0F18;
+  --bg-surface:   #161B26;
+  --bg-surface-2: #1F2532;
+  --fg-1: #F2F4F8; --fg-2: #B4BCCB; --fg-3: #8A94A6; --fg-4: #5C6577;
+  --border-1: #232A38; --border-2: #1F2532; --border-strong: #353D4B;
+}
+
+/* ── Semantic type system ─────────────────────────────────────────────────── */
+/* Sizes are tuned for iOS — Korean text reads ~1pt larger than Latin */
+
+:root {
+  --t-display-size: 34px;  --t-display-lh: 1.18; --t-display-tr: -0.022em; --t-display-w: 700;
+  --t-h1-size: 28px;       --t-h1-lh: 1.22;      --t-h1-tr: -0.020em;     --t-h1-w: 700;
+  --t-h2-size: 22px;       --t-h2-lh: 1.28;      --t-h2-tr: -0.014em;     --t-h2-w: 700;
+  --t-h3-size: 18px;       --t-h3-lh: 1.34;      --t-h3-tr: -0.010em;     --t-h3-w: 600;
+  --t-title-size: 17px;    --t-title-lh: 1.38;   --t-title-tr: -0.005em;  --t-title-w: 600;
+  --t-body-size: 16px;     --t-body-lh: 1.50;    --t-body-tr: 0;          --t-body-w: 400;
+  --t-callout-size: 15px;  --t-callout-lh: 1.48; --t-callout-tr: 0;       --t-callout-w: 500;
+  --t-caption-size: 13px;  --t-caption-lh: 1.42; --t-caption-tr: 0;       --t-caption-w: 500;
+  --t-micro-size: 11px;    --t-micro-lh: 1.40;   --t-micro-tr: 0.005em;   --t-micro-w: 600;
+  --t-metric-size: 40px;   --t-metric-lh: 1.0;   --t-metric-tr: -0.025em; --t-metric-w: 700;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+html, body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "tnum", "kern";
+}
+
+/* ── Element defaults ─────────────────────────────────────────────────────── */
+h1, .t-display {
+  font-size: var(--t-display-size); line-height: var(--t-display-lh);
+  letter-spacing: var(--t-display-tr); font-weight: var(--t-display-w);
+  color: var(--fg-1); margin: 0;
+}
+h2, .t-h1 {
+  font-size: var(--t-h1-size); line-height: var(--t-h1-lh);
+  letter-spacing: var(--t-h1-tr); font-weight: var(--t-h1-w);
+  color: var(--fg-1); margin: 0;
+}
+h3, .t-h2 {
+  font-size: var(--t-h2-size); line-height: var(--t-h2-lh);
+  letter-spacing: var(--t-h2-tr); font-weight: var(--t-h2-w);
+  color: var(--fg-1); margin: 0;
+}
+h4, .t-h3 {
+  font-size: var(--t-h3-size); line-height: var(--t-h3-lh);
+  letter-spacing: var(--t-h3-tr); font-weight: var(--t-h3-w);
+  color: var(--fg-1); margin: 0;
+}
+.t-title {
+  font-size: var(--t-title-size); line-height: var(--t-title-lh);
+  letter-spacing: var(--t-title-tr); font-weight: var(--t-title-w);
+}
+p, .t-body {
+  font-size: var(--t-body-size); line-height: var(--t-body-lh);
+  font-weight: var(--t-body-w); color: var(--fg-1); margin: 0;
+}
+.t-callout {
+  font-size: var(--t-callout-size); line-height: var(--t-callout-lh);
+  font-weight: var(--t-callout-w);
+}
+small, .t-caption {
+  font-size: var(--t-caption-size); line-height: var(--t-caption-lh);
+  font-weight: var(--t-caption-w); color: var(--fg-2);
+}
+.t-micro {
+  font-size: var(--t-micro-size); line-height: var(--t-micro-lh);
+  letter-spacing: var(--t-micro-tr); font-weight: var(--t-micro-w);
+  text-transform: uppercase; color: var(--fg-3);
+}
+.t-metric {
+  font-family: var(--font-numeric);
+  font-size: var(--t-metric-size); line-height: var(--t-metric-lh);
+  letter-spacing: var(--t-metric-tr); font-weight: var(--t-metric-w);
+  font-variant-numeric: tabular-nums;
+}
+code, .t-mono {
+  font-family: var(--font-mono);
+  font-size: 14px; line-height: 1.5;
+  background: var(--gray-100); padding: 1px 6px;
+  border-radius: var(--r-xs);
+}
+
+/* ── Status helpers ───────────────────────────────────────────────────────── */
+.status-normal     { color: var(--status-normal); }
+.status-caution    { color: var(--status-caution); }
+.status-suspect    { color: var(--status-suspect); }
+.status-unknown    { color: var(--status-unknown); }
+.bg-status-normal  { background: var(--status-normal-bg);  color: var(--status-normal); }
+.bg-status-caution { background: var(--status-caution-bg); color: var(--status-caution); }
+.bg-status-suspect { background: var(--status-suspect-bg); color: var(--status-suspect); }
+.bg-status-unknown { background: var(--status-unknown-bg); color: var(--status-unknown); }

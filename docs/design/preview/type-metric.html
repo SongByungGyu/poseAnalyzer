@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Type — metric numerics</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .card { padding: 20px 24px; }
+  .row-spec { display: flex; align-items: center; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--border-2); }
+  .row-spec:last-child { border-bottom: none; }
+  .row-spec .tok { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); width: 96px; flex: none; }
+  .row-spec .specimen { flex: 1; display: flex; align-items: baseline; gap: 12px; }
+  .row-spec .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); white-space: nowrap; }
+  .metric { font-family: var(--font-numeric); font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .label-after { font-size: 14px; color: var(--fg-3); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row-spec">
+    <div class="tok">.t-metric</div>
+    <div class="specimen"><span class="metric" style="font-size:40px;color:#22A06B">172°</span><span class="label-after">forwardHead · normal</span></div>
+    <div class="meta">40px · tnum</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">metric/inline</div>
+    <div class="specimen"><span class="metric" style="font-size:28px;color:#D9A106">164°</span><span class="label-after">caution range</span></div>
+    <div class="meta">28px · tnum</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">metric/inline</div>
+    <div class="specimen"><span class="metric" style="font-size:22px">1.8 cm</span><span class="label-after">asymmetry · 우측 어깨</span></div>
+    <div class="meta">22px · tnum</div>
+  </div>
+  <div class="row-spec">
+    <div class="tok">metric/delta</div>
+    <div class="specimen"><span class="metric" style="font-size:18px;color:#22A06B">+2°</span><span class="label-after">직전 대비 개선</span></div>
+    <div class="meta">18px · tnum</div>
+  </div>
+</div>
+</body></html>
