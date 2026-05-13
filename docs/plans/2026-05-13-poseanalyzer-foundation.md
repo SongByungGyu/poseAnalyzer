@@ -745,14 +745,14 @@ final class VisionPoseDetector: PoseDetector {
                 }
                 
                 // 여러 명이면 bounding box 가장 큰 1명 선택 (스펙)
+                // VNHumanBodyPoseObservation은 boundingBox 속성이 없어
+                // 인식된 관절들의 좌표 min/max로 면적을 직접 계산
                 let chosen: VNHumanBodyPoseObservation
                 if observations.count == 1 {
                     chosen = observations[0]
                 } else {
                     chosen = observations.max(by: { lhs, rhs in
-                        let lhsArea = lhs.boundingBox.width * lhs.boundingBox.height
-                        let rhsArea = rhs.boundingBox.width * rhs.boundingBox.height
-                        return lhsArea < rhsArea
+                        return Self.boundingBoxArea(of: lhs) < Self.boundingBoxArea(of: rhs)
                     })!
                 }
                 
@@ -773,6 +773,18 @@ final class VisionPoseDetector: PoseDetector {
                 continuation.resume(throwing: PoseDetectionError.visionFailed(message: error.localizedDescription))
             }
         }
+    }
+    
+    /// 관절 좌표의 min/max로 bounding box 면적 계산 (정규화 좌표 0~1)
+    private static func boundingBoxArea(of observation: VNHumanBodyPoseObservation) -> Double {
+        guard let points = try? observation.recognizedPoints(.all) else { return 0 }
+        let confident = points.values.filter { $0.confidence > 0.3 }
+        guard !confident.isEmpty else { return 0 }
+        let xs = confident.map { Double($0.location.x) }
+        let ys = confident.map { Double($0.location.y) }
+        let width = (xs.max() ?? 0) - (xs.min() ?? 0)
+        let height = (ys.max() ?? 0) - (ys.min() ?? 0)
+        return width * height
     }
     
     private static func makeFrame(
