@@ -110,10 +110,11 @@ final class MeasurementViewModel {
                 self.step = .done
             } catch let error as PoseDetectionError {
                 self.errorMessage = error.errorDescription ?? "분석 실패"
-                self.step = .front
+                // step은 .height 유지 (alert 닫고 키 입력 화면). retryFromBeginning은 alert "다시 측정" 액션에서.
+                self.step = .height
             } catch {
                 self.errorMessage = "예상치 못한 오류: \(error.localizedDescription)"
-                self.step = .front
+                self.step = .height
             }
         }
     }
