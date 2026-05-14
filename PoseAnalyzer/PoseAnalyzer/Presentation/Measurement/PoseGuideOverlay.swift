@@ -151,7 +151,9 @@ private struct StepBadge: View {
 
 /// 점선 외곽선 + 측정 관절 십자선 마커 + (측면) plumb-line + (측면) 한글 라벨
 ///
-/// 좌표계: 200×470 viewBox 기준. 실제 화면 크기에 맞춰 scale + 중앙 정렬.
+/// 모든 좌표는 200×470 viewBox 기준으로 정의하고, Shape protocol이 rect를 받아
+/// 변환한다 (이전 Path .stroke의 visual-centered 동작과 viewBox-absolute 좌표
+/// 간 미스매치를 해결). 모든 element가 동일한 좌표계에서 정렬됨.
 private struct PoseSilhouetteB: View {
     let view: SessionView
 
@@ -163,156 +165,42 @@ private struct PoseSilhouetteB: View {
                             proxy.size.height / baseSize.height)
             let scaledW = baseSize.width  * scale
             let scaledH = baseSize.height * scale
-            let dx = (proxy.size.width  - scaledW) / 2
-            let dy = (proxy.size.height - scaledH) / 2
 
-            ZStack(alignment: .topLeading) {
-                // 1) 점선 외곽선 (살짝 채움 — 카메라 위에서 영역 인지를 돕기 위해 매우 옅게)
-                bodyPath
+            ZStack {
+                // 1) 점선 외곽선 (옅게 채움 — 영역 인지)
+                BodyShape(view: view)
                     .fill(Color.white.opacity(0.03))
-                    .frame(width: scaledW, height: scaledH)
-                    .offset(x: dx, y: dy)
 
-                bodyPath
+                BodyShape(view: view)
                     .stroke(
                         Color.white,
                         style: StrokeStyle(lineWidth: 2, lineJoin: .round, dash: [6, 6])
                     )
-                    .frame(width: scaledW, height: scaledH)
-                    .offset(x: dx, y: dy)
 
                 // 2) 정렬선
-                alignmentGuides
-                    .frame(width: scaledW, height: scaledH)
-                    .offset(x: dx, y: dy)
+                AlignmentLinesShape(view: view)
+                    .stroke(
+                        Color.brandMint.opacity(view == .side ? 0.7 : 0.65),
+                        style: StrokeStyle(lineWidth: 1, dash: [3, 4])
+                    )
 
                 // 3) plumb-line 라벨 (측면만)
                 if view == .side {
                     plumbLineLabel(scale: scale)
-                        .offset(x: dx, y: dy)
                 }
 
                 // 4) 십자선 마커
                 crosshairs(scale: scale)
-                    .offset(x: dx, y: dy)
 
-                // 5) 관절 한글 라벨 (측면만 — 정면은 너무 빽빽해짐)
+                // 5) 관절 한글 라벨 (측면만)
                 if view == .side {
                     sideJointLabels(scale: scale)
-                        .offset(x: dx, y: dy)
                 }
             }
+            .frame(width: scaledW, height: scaledH)
+            // 전체 GR proxy 안에서 가운데 정렬
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
         }
-    }
-
-    // MARK: 본체 path
-
-    private var bodyPath: Path {
-        switch view {
-        case .front: return Self.frontPath
-        case .side:  return Self.sidePath
-        }
-    }
-
-    /// 정면 사람 실루엣
-    private static let frontPath: Path = {
-        var p = Path()
-        p.move(to: CGPoint(x: 100, y: 28))
-        p.addCurve(to: CGPoint(x: 132, y: 84),
-                   control1: CGPoint(x: 130, y: 28),
-                   control2: CGPoint(x: 142, y: 56))
-        p.addLine(to: CGPoint(x: 162, y: 116))
-        p.addLine(to: CGPoint(x: 168, y: 196))
-        p.addLine(to: CGPoint(x: 144, y: 216))
-        p.addLine(to: CGPoint(x: 142, y: 268))
-        p.addLine(to: CGPoint(x: 156, y: 460))
-        p.addLine(to: CGPoint(x: 130, y: 460))
-        p.addLine(to: CGPoint(x: 116, y: 304))
-        p.addLine(to: CGPoint(x: 100, y: 280))
-        p.addLine(to: CGPoint(x: 84, y: 304))
-        p.addLine(to: CGPoint(x: 70, y: 460))
-        p.addLine(to: CGPoint(x: 44, y: 460))
-        p.addLine(to: CGPoint(x: 58, y: 268))
-        p.addLine(to: CGPoint(x: 56, y: 216))
-        p.addLine(to: CGPoint(x: 32, y: 196))
-        p.addLine(to: CGPoint(x: 38, y: 116))
-        p.addLine(to: CGPoint(x: 68, y: 84))
-        p.addCurve(to: CGPoint(x: 100, y: 28),
-                   control1: CGPoint(x: 58, y: 56),
-                   control2: CGPoint(x: 70, y: 28))
-        p.closeSubpath()
-        return p
-    }()
-
-    /// 측면 사람 실루엣 (얼굴은 오른쪽 방향)
-    private static let sidePath: Path = {
-        var p = Path()
-        p.move(to: CGPoint(x: 116, y: 28))
-        p.addCurve(to: CGPoint(x: 144, y: 76),
-                   control1: CGPoint(x: 138, y: 28),
-                   control2: CGPoint(x: 148, y: 50))
-        p.addLine(to: CGPoint(x: 150, y: 88))
-        p.addLine(to: CGPoint(x: 142, y: 96))
-        p.addLine(to: CGPoint(x: 138, y: 104))
-        p.addLine(to: CGPoint(x: 122, y: 110))
-        p.addLine(to: CGPoint(x: 124, y: 124))
-        p.addLine(to: CGPoint(x: 142, y: 138))
-        p.addCurve(to: CGPoint(x: 128, y: 230),
-                   control1: CGPoint(x: 140, y: 168),
-                   control2: CGPoint(x: 134, y: 200))
-        p.addLine(to: CGPoint(x: 134, y: 260))
-        p.addCurve(to: CGPoint(x: 132, y: 320),
-                   control1: CGPoint(x: 138, y: 280),
-                   control2: CGPoint(x: 138, y: 300))
-        p.addLine(to: CGPoint(x: 138, y: 360))
-        p.addCurve(to: CGPoint(x: 128, y: 460),
-                   control1: CGPoint(x: 138, y: 400),
-                   control2: CGPoint(x: 134, y: 430))
-        p.addLine(to: CGPoint(x: 104, y: 460))
-        p.addLine(to: CGPoint(x: 102, y: 432))
-        p.addLine(to: CGPoint(x: 108, y: 380))
-        p.addLine(to: CGPoint(x: 102, y: 320))
-        p.addCurve(to: CGPoint(x: 102, y: 246),
-                   control1: CGPoint(x: 96, y: 296),
-                   control2: CGPoint(x: 96, y: 270))
-        p.addLine(to: CGPoint(x: 96, y: 226))
-        p.addLine(to: CGPoint(x: 92, y: 196))
-        p.addCurve(to: CGPoint(x: 86, y: 124),
-                   control1: CGPoint(x: 86, y: 168),
-                   control2: CGPoint(x: 84, y: 138))
-        p.addCurve(to: CGPoint(x: 82, y: 92),
-                   control1: CGPoint(x: 80, y: 116),
-                   control2: CGPoint(x: 78, y: 104))
-        p.addLine(to: CGPoint(x: 80, y: 80))
-        p.addCurve(to: CGPoint(x: 96, y: 38),
-                   control1: CGPoint(x: 78, y: 66),
-                   control2: CGPoint(x: 84, y: 50))
-        p.addCurve(to: CGPoint(x: 116, y: 28),
-                   control1: CGPoint(x: 102, y: 32),
-                   control2: CGPoint(x: 108, y: 28))
-        p.closeSubpath()
-        return p
-    }()
-
-    // MARK: 정렬선 (정면: 가로 / 측면: 세로 plumb-line)
-
-    private var alignmentGuides: some View {
-        Path { p in
-            switch view {
-            case .front:
-                // 어깨 + 골반 수평선
-                p.move(to: CGPoint(x: 48,  y: 116));  p.addLine(to: CGPoint(x: 152, y: 116))
-                p.move(to: CGPoint(x: 58,  y: 216));  p.addLine(to: CGPoint(x: 142, y: 216))
-            case .side:
-                // 귀–어깨–엉덩이–무릎–발목 수직 plumb-line
-                p.move(to: CGPoint(x: 118, y: 64))
-                p.addLine(to: CGPoint(x: 118, y: 450))
-            }
-        }
-        .stroke(
-            Color.brandMint.opacity(view == .side ? 0.7 : 0.65),
-            style: StrokeStyle(lineWidth: 1, dash: [3, 4])
-        )
     }
 
     // MARK: plumb-line 작은 라벨 ("정렬선")
@@ -334,18 +222,16 @@ private struct PoseSilhouetteB: View {
     // MARK: 십자선 마커
 
     private struct Crosshair: View {
-        let center: CGPoint
-        let size: CGFloat
+        let center: CGPoint   // viewBox 좌표 (200×470 기준)
+        let size: CGFloat     // unscaled
         let scale: CGFloat
         var body: some View {
-            ZStack {
-                Path { p in
-                    p.move(to: CGPoint(x: -size, y: 0));  p.addLine(to: CGPoint(x: size, y: 0))
-                    p.move(to: CGPoint(x: 0, y: -size));  p.addLine(to: CGPoint(x: 0, y: size))
-                }
-                .stroke(Color.brandMint, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
-                .frame(width: size * 2, height: size * 2)
+            Path { p in
+                p.move(to: CGPoint(x: -size, y: 0));  p.addLine(to: CGPoint(x: size, y: 0))
+                p.move(to: CGPoint(x: 0, y: -size));  p.addLine(to: CGPoint(x: 0, y: size))
             }
+            .stroke(Color.brandMint, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+            .frame(width: size * 2, height: size * 2)
             .position(x: center.x * scale, y: center.y * scale)
         }
     }
@@ -405,6 +291,125 @@ private struct PoseSilhouetteB: View {
             .alignmentGuide(.leading)   { d in anchor == .leading   ? 0     : d.width }
             .alignmentGuide(.trailing)  { d in anchor == .trailing  ? d.width : 0    }
             .position(x: pt.x * scale, y: pt.y * scale)
+    }
+}
+
+// MARK: - Body Shape (viewBox 200×470 좌표를 rect로 매핑)
+
+private struct BodyShape: Shape {
+    let view: SessionView
+    private static let viewBox = CGSize(width: 200, height: 470)
+
+    func path(in rect: CGRect) -> Path {
+        let sx = rect.width / Self.viewBox.width
+        let sy = rect.height / Self.viewBox.height
+        // viewBox 좌표 → rect 좌표 helper
+        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: x * sx, y: y * sy)
+        }
+
+        var p = Path()
+        switch view {
+        case .front:
+            p.move(to: pt(100, 28))
+            p.addCurve(to: pt(132, 84),
+                       control1: pt(130, 28),
+                       control2: pt(142, 56))
+            p.addLine(to: pt(162, 116))
+            p.addLine(to: pt(168, 196))
+            p.addLine(to: pt(144, 216))
+            p.addLine(to: pt(142, 268))
+            p.addLine(to: pt(156, 460))
+            p.addLine(to: pt(130, 460))
+            p.addLine(to: pt(116, 304))
+            p.addLine(to: pt(100, 280))
+            p.addLine(to: pt(84, 304))
+            p.addLine(to: pt(70, 460))
+            p.addLine(to: pt(44, 460))
+            p.addLine(to: pt(58, 268))
+            p.addLine(to: pt(56, 216))
+            p.addLine(to: pt(32, 196))
+            p.addLine(to: pt(38, 116))
+            p.addLine(to: pt(68, 84))
+            p.addCurve(to: pt(100, 28),
+                       control1: pt(58, 56),
+                       control2: pt(70, 28))
+            p.closeSubpath()
+        case .side:
+            p.move(to: pt(116, 28))
+            p.addCurve(to: pt(144, 76),
+                       control1: pt(138, 28),
+                       control2: pt(148, 50))
+            p.addLine(to: pt(150, 88))
+            p.addLine(to: pt(142, 96))
+            p.addLine(to: pt(138, 104))
+            p.addLine(to: pt(122, 110))
+            p.addLine(to: pt(124, 124))
+            p.addLine(to: pt(142, 138))
+            p.addCurve(to: pt(128, 230),
+                       control1: pt(140, 168),
+                       control2: pt(134, 200))
+            p.addLine(to: pt(134, 260))
+            p.addCurve(to: pt(132, 320),
+                       control1: pt(138, 280),
+                       control2: pt(138, 300))
+            p.addLine(to: pt(138, 360))
+            p.addCurve(to: pt(128, 460),
+                       control1: pt(138, 400),
+                       control2: pt(134, 430))
+            p.addLine(to: pt(104, 460))
+            p.addLine(to: pt(102, 432))
+            p.addLine(to: pt(108, 380))
+            p.addLine(to: pt(102, 320))
+            p.addCurve(to: pt(102, 246),
+                       control1: pt(96, 296),
+                       control2: pt(96, 270))
+            p.addLine(to: pt(96, 226))
+            p.addLine(to: pt(92, 196))
+            p.addCurve(to: pt(86, 124),
+                       control1: pt(86, 168),
+                       control2: pt(84, 138))
+            p.addCurve(to: pt(82, 92),
+                       control1: pt(80, 116),
+                       control2: pt(78, 104))
+            p.addLine(to: pt(80, 80))
+            p.addCurve(to: pt(96, 38),
+                       control1: pt(78, 66),
+                       control2: pt(84, 50))
+            p.addCurve(to: pt(116, 28),
+                       control1: pt(102, 32),
+                       control2: pt(108, 28))
+            p.closeSubpath()
+        }
+        return p
+    }
+}
+
+// MARK: - Alignment Lines Shape (정면: 어깨/골반 수평선, 측면: 척추 plumb-line)
+
+private struct AlignmentLinesShape: Shape {
+    let view: SessionView
+    private static let viewBox = CGSize(width: 200, height: 470)
+
+    func path(in rect: CGRect) -> Path {
+        let sx = rect.width / Self.viewBox.width
+        let sy = rect.height / Self.viewBox.height
+        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: x * sx, y: y * sy)
+        }
+
+        var p = Path()
+        switch view {
+        case .front:
+            // 어깨 + 골반 수평선
+            p.move(to: pt(48, 116));  p.addLine(to: pt(152, 116))
+            p.move(to: pt(58, 216));  p.addLine(to: pt(142, 216))
+        case .side:
+            // 귀–어깨–엉덩이–무릎–발목 수직 plumb-line
+            p.move(to: pt(118, 64))
+            p.addLine(to: pt(118, 450))
+        }
+        return p
     }
 }
 
