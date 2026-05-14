@@ -9,7 +9,11 @@ struct CameraImagePicker: UIViewControllerRepresentable {
     var onCancel: () -> Void
 
     static var isAvailable: Bool {
-        UIImagePickerController.isSourceTypeAvailable(.camera)
+        #if targetEnvironment(simulator)
+        return false
+        #else
+        return UIImagePickerController.isSourceTypeAvailable(.camera)
+        #endif
     }
 
     func makeCoordinator() -> Coordinator {

@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 /// 사진 입력 방식 선택 (카메라 / 라이브러리) 액션 시트
 /// 시뮬레이터에서는 카메라 버튼 비활성화
@@ -9,6 +10,8 @@ struct PhotoInputSheet: View {
 
     @State private var showLibrary = false
     @State private var showCamera = false
+    @State private var pickerSelection: PhotosPickerItem?
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack(spacing: AppSpacing.s3) {
@@ -55,13 +58,17 @@ struct PhotoInputSheet: View {
         .frame(maxWidth: .infinity)
         .background(Color.bgSurface)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.xl, style: .continuous))
-        // PhotosPicker는 자체 sheet 처리하므로 background에 둠
-        .background(
-            PhotoLibraryPicker(isPresented: $showLibrary) { image in
-                isPresented = false
-                onPicked(image)
-            }
+        // PhotosPicker는 iOS 16+ SwiftUI native modifier로 트리거
+        .photosPicker(
+            isPresented: $showLibrary,
+            selection: $pickerSelection,
+            matching: .images,
+            photoLibrary: .shared()
         )
+        .onChange(of: pickerSelection) { _, newItem in
+            guard let item = newItem else { return }
+            Task { await loadSelected(item: item) }
+        }
         .fullScreenCover(isPresented: $showCamera) {
             CameraImagePicker(
                 onPicked: { image in
@@ -74,6 +81,26 @@ struct PhotoInputSheet: View {
                 }
             )
             .ignoresSafeArea()
+        }
+        .alert("사진 불러오기 실패", isPresented: .constant(errorMessage != nil)) {
+            Button("확인") { errorMessage = nil }
+        } message: {
+            if let msg = errorMessage { Text(msg) }
+        }
+    }
+
+    private func loadSelected(item: PhotosPickerItem) async {
+        defer { pickerSelection = nil }
+        do {
+            if let data = try await item.loadTransferable(type: Data.self),
+               let image = UIImage(data: data) {
+                isPresented = false
+                onPicked(image)
+            } else {
+                errorMessage = "사진 데이터를 읽을 수 없습니다."
+            }
+        } catch {
+            errorMessage = "사진 불러오기 중 오류: \(error.localizedDescription)"
         }
     }
 }
