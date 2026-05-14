@@ -115,7 +115,7 @@ struct HomeView: View {
     private func recentSection(_ vm: HomeViewModel) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.s2) {
             SectionHeader(title: "최근 측정") {
-                NavigationLink(destination: Text("기록 화면 (Plan 2c)")) {
+                NavigationLink(destination: HistoryListView()) {
                     Text("전체 보기 ›")
                         .font(.appCaption)
                         .foregroundStyle(Color.brandPrimary)
