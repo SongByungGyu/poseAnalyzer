@@ -20,7 +20,7 @@ struct HistoryListView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(destination: TrendViewPlaceholder()) {
+                NavigationLink(destination: TrendView()) {
                     HStack(spacing: 4) {
                         Image(systemName: "chart.line.uptrend.xyaxis")
                         Text("추이")
@@ -173,21 +173,6 @@ struct AnalysisResultDetailView: View {
             asymmetry: asymmetry,
             heightCmAtMeasure: session.heightCmAtMeasure
         )
-    }
-}
-
-/// TrendView 임시 placeholder (Task 8에서 교체 예정)
-private struct TrendViewPlaceholder: View {
-    var body: some View {
-        AppEmptyState(
-            icon: "chart.line.uptrend.xyaxis",
-            title: "추이 (Task 8)",
-            message: "추이 화면은 Task 8에서 작성됩니다."
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.bgCanvas)
-        .navigationTitle("추이")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
