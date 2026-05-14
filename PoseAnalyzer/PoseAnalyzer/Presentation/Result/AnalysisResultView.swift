@@ -9,6 +9,7 @@ struct AnalysisResultView: View {
     @Environment(\.dependencies) private var dependencies
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: AnalysisResultViewModel?
+    @State private var showSavedToast = false
 
     var body: some View {
         ScrollView {
@@ -29,7 +30,7 @@ struct AnalysisResultView: View {
         .toolbar {
             if !isReadOnly, let vm = viewModel, !vm.isSaved {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: { vm.save() }) {
+                    Button(action: handleSave) {
                         if vm.isSaving {
                             ProgressView()
                         } else {
@@ -40,6 +41,13 @@ struct AnalysisResultView: View {
                     }
                     .disabled(vm.isSaving)
                 }
+            }
+        }
+        .overlay(alignment: .top) {
+            if showSavedToast {
+                AppToast(text: "저장되었습니다", style: .success)
+                    .padding(.top, AppSpacing.s2)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
         .onAppear {
@@ -57,6 +65,23 @@ struct AnalysisResultView: View {
             Button("확인", role: .cancel) {}
         } message: {
             Text(viewModel?.errorMessage ?? "")
+        }
+    }
+
+    /// 저장 → 토스트 → 자동 dismiss
+    private func handleSave() {
+        guard let vm = viewModel else { return }
+        vm.save()
+        // 저장 성공 시 토스트 + 자동 dismiss
+        guard vm.isSaved else { return }
+        withAnimation(.easeOut(duration: 0.22)) {
+            showSavedToast = true
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            await MainActor.run {
+                dismiss()
+            }
         }
     }
 
