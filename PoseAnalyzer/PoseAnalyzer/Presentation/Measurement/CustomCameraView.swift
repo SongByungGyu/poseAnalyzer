@@ -6,6 +6,8 @@ import SwiftUI
 struct CustomCameraView: View {
 
     let view: SessionView
+    /// 마법사 현재 단계 (1=정면, 2=측면). PoseGuideOverlay의 STEP 배지에 표시.
+    var step: Int? = nil
     var onPicked: (UIImage) -> Void
     var onCancel: () -> Void
 
@@ -32,8 +34,8 @@ struct CustomCameraView: View {
                 CameraPreviewView(session: manager.session)
                     .ignoresSafeArea()
 
-                // 2) 자세 가이드 오버레이
-                PoseGuideOverlay(view: view)
+                // 2) 자세 가이드 오버레이 (STEP 배지 포함)
+                PoseGuideOverlay(view: view, step: step)
                     .ignoresSafeArea()
             } else if let msg = manager.errorMessage {
                 VStack(spacing: AppSpacing.s3) {

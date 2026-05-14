@@ -7,6 +7,8 @@ struct PhotoInputSheet: View {
 
     @Binding var isPresented: Bool
     let view: SessionView    // 카메라 가이드 (정면/측면) 결정용
+    /// 마법사 단계 번호 (1=정면, 2=측면). 카메라 STEP 배지 표시용. 옵션.
+    var step: Int? = nil
     var onPicked: (UIImage) -> Void
 
     @State private var showLibrary = false
@@ -74,6 +76,7 @@ struct PhotoInputSheet: View {
         .fullScreenCover(isPresented: $showCamera) {
             CustomCameraView(
                 view: view,
+                step: step,
                 onPicked: { image in
                     showCamera = false
                     isPresented = false
