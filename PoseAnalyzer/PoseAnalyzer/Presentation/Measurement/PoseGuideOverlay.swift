@@ -241,6 +241,7 @@ private struct PoseSilhouetteB: View {
         let crosses: [(CGPoint, CGFloat)] = {
             switch view {
             case .front:
+                // 무릎/발목 좌표를 다리 외곽의 중심선으로 조정 (안쪽 모임 fix)
                 return [
                     (CGPoint(x: 84,  y: 56), 6),    // 좌 귀
                     (CGPoint(x: 116, y: 56), 6),    // 우 귀
@@ -248,10 +249,10 @@ private struct PoseSilhouetteB: View {
                     (CGPoint(x: 152, y: 116), 8),   // 우 어깨
                     (CGPoint(x: 58,  y: 216), 8),   // 좌 골반
                     (CGPoint(x: 142, y: 216), 8),   // 우 골반
-                    (CGPoint(x: 74,  y: 340), 8),   // 좌 무릎
-                    (CGPoint(x: 126, y: 340), 8),   // 우 무릎
-                    (CGPoint(x: 60,  y: 450), 8),   // 좌 발목
-                    (CGPoint(x: 140, y: 450), 8),   // 우 발목
+                    (CGPoint(x: 64,  y: 380), 8),   // 좌 무릎 (다리 중심)
+                    (CGPoint(x: 136, y: 380), 8),   // 우 무릎 (다리 중심)
+                    (CGPoint(x: 57,  y: 455), 8),   // 좌 발목
+                    (CGPoint(x: 143, y: 455), 8),   // 우 발목
                 ]
             case .side:
                 return [
@@ -273,24 +274,37 @@ private struct PoseSilhouetteB: View {
 
     // MARK: 측면 관절 한글 라벨
 
+    /// 측면 라벨은 실루엣 외부에 배치 — anchor에 따라 좌측/우측 빈 영역.
+    /// 라벨 좌표는 viewBox 경계에 가깝게 잡고 .frame + alignment로 외부 정렬.
     private func sideJointLabels(scale: CGFloat) -> some View {
         ZStack {
-            label("귀",     at: CGPoint(x: 80,  y: 68),  scale: scale, anchor: .trailing)
-            label("어깨",   at: CGPoint(x: 80,  y: 144), scale: scale, anchor: .trailing)
-            label("엉덩이", at: CGPoint(x: 80,  y: 250), scale: scale, anchor: .trailing)
-            label("무릎",   at: CGPoint(x: 156, y: 344), scale: scale, anchor: .leading)
-            label("발목",   at: CGPoint(x: 156, y: 454), scale: scale, anchor: .leading)
+            // 좌측 라벨 (실루엣 좌측 외부)
+            label("귀",     at: CGPoint(x: 76,  y: 68),  scale: scale, anchor: .trailing)
+            label("어깨",   at: CGPoint(x: 76,  y: 140), scale: scale, anchor: .trailing)
+            label("엉덩이", at: CGPoint(x: 88,  y: 246), scale: scale, anchor: .trailing)
+            // 우측 라벨 (실루엣 우측 외부)
+            label("무릎",   at: CGPoint(x: 144, y: 340), scale: scale, anchor: .leading)
+            label("발목",   at: CGPoint(x: 144, y: 450), scale: scale, anchor: .leading)
         }
     }
 
+    /// 라벨을 anchor에 정확히 맞춰 위치.
+    /// - trailing: text의 우측 edge가 pt.x에 위치 (좌측 영역에 라벨 표시)
+    /// - leading:  text의 좌측 edge가 pt.x에 위치 (우측 영역에 라벨 표시)
     private func label(_ text: String, at pt: CGPoint, scale: CGFloat, anchor: HorizontalAlignment) -> some View {
-        Text(text)
-            .font(.system(size: 9, weight: .semibold))
-            .foregroundStyle(Color.white.opacity(0.7))
-            .fixedSize()
-            .alignmentGuide(.leading)   { d in anchor == .leading   ? 0     : d.width }
-            .alignmentGuide(.trailing)  { d in anchor == .trailing  ? d.width : 0    }
-            .position(x: pt.x * scale, y: pt.y * scale)
+        let frameWidth: CGFloat = 60
+        let isTrailing = (anchor == .trailing)
+        return Text(text)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(Color.white.opacity(0.85))
+            .frame(width: frameWidth, alignment: isTrailing ? .trailing : .leading)
+            // .position이 frame center에 위치하므로, anchor에 맞게 frameWidth/2 만큼 보정.
+            // trailing: frame center를 pt.x - frameWidth/2로 → frame 우측 edge가 pt.x
+            // leading:  frame center를 pt.x + frameWidth/2로 → frame 좌측 edge가 pt.x
+            .position(
+                x: pt.x * scale + (isTrailing ? -frameWidth / 2 : frameWidth / 2),
+                y: pt.y * scale
+            )
     }
 }
 
