@@ -83,8 +83,9 @@ struct LaunchView: View {
                     .padding(.bottom, AppSpacing.s9)
             }
         }
-        // LaunchView는 항상 라이트/다크 무관하게 인디고 톤이 정체성이므로 강제
-        .preferredColorScheme(.light)
+        // .preferredColorScheme(.light)는 window 전체에 잔존 효과가 있어 메인 화면이
+        // 다크모드여도 라이트로 강제됨 → 제거. LaunchView 자체가 흰 텍스트 + 인디고라
+        // 라이트/다크 무관하게 동일하게 보임.
     }
 }
 
