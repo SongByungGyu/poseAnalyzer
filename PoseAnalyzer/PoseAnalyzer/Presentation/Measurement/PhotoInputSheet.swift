@@ -12,6 +12,7 @@ struct PhotoInputSheet: View {
     @State private var showCamera = false
     @State private var pickerSelection: PhotosPickerItem?
     @State private var errorMessage: String?
+    @State private var showCameraPermissionAlert = false
 
     var body: some View {
         VStack(spacing: AppSpacing.s3) {
@@ -31,7 +32,7 @@ struct PhotoInputSheet: View {
                     variant: .primary,
                     size: .large,
                     isDisabled: !CameraImagePicker.isAvailable,
-                    action: { showCamera = true }
+                    action: { handleCameraButton() }
                 ) {
                     HStack(spacing: 8) {
                         Image(systemName: "camera.fill")
@@ -86,6 +87,33 @@ struct PhotoInputSheet: View {
             Button("확인") { errorMessage = nil }
         } message: {
             if let msg = errorMessage { Text(msg) }
+        }
+        .alert("카메라 권한이 필요합니다", isPresented: $showCameraPermissionAlert) {
+            Button("설정 열기") {
+                AppPermissions.openAppSettings()
+            }
+            Button("취소", role: .cancel) {}
+        } message: {
+            Text("자세 사진 촬영을 위해 카메라 접근이 필요합니다.\n설정 → PoseAnalyzer → 카메라에서 허용해주세요.")
+        }
+    }
+
+    /// 카메라 버튼 액션 — 권한 상태에 따라 분기
+    private func handleCameraButton() {
+        Task {
+            switch AppPermissions.cameraStatus {
+            case .authorized:
+                showCamera = true
+            case .notDetermined:
+                let granted = await AppPermissions.requestCamera()
+                if granted {
+                    showCamera = true
+                } else {
+                    showCameraPermissionAlert = true
+                }
+            case .denied:
+                showCameraPermissionAlert = true
+            }
         }
     }
 
