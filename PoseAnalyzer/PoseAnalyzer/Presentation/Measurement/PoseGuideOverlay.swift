@@ -167,7 +167,7 @@ private struct PoseSilhouetteB: View {
             let scaledH = baseSize.height * scale
 
             ZStack {
-                // 1) 점선 외곽선 (옅게 채움 — 영역 인지)
+                // 점선 외곽선 (옅게 채움 — 영역 인지)
                 BodyShape(view: view)
                     .fill(Color.white.opacity(0.03))
 
@@ -177,25 +177,8 @@ private struct PoseSilhouetteB: View {
                         style: StrokeStyle(lineWidth: 2, lineJoin: .round, dash: [6, 6])
                     )
 
-                // 2) 정렬선
-                AlignmentLinesShape(view: view)
-                    .stroke(
-                        Color.brandMint.opacity(view == .side ? 0.7 : 0.65),
-                        style: StrokeStyle(lineWidth: 1, dash: [3, 4])
-                    )
-
-                // 3) plumb-line 라벨 (측면만)
-                if view == .side {
-                    plumbLineLabel(scale: scale)
-                }
-
-                // 4) 십자선 마커
-                crosshairs(scale: scale)
-
-                // 5) 관절 한글 라벨 (측면만)
-                if view == .side {
-                    sideJointLabels(scale: scale)
-                }
+                // 가이드 보조 요소(정렬선/plumb-line/십자선/관절 라벨)는 단순화를 위해 제거.
+                // 실루엣 외곽선만으로 사용자가 자세 가이드 인식.
             }
             .frame(width: scaledW, height: scaledH)
             // 전체 GR proxy 안에서 가운데 정렬

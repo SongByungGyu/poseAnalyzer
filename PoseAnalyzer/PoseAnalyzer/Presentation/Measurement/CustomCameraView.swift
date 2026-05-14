@@ -25,36 +25,37 @@ struct CustomCameraView: View {
     @State private var errorMessage: String?
 
     var body: some View {
-        // 외부 GeometryReader가 safeAreaInsets을 명시적으로 들고 있고,
-        // 내부 ZStack은 .ignoresSafeArea로 풀스크린 차지. UI는 safe area 안.
+        // GR은 safe area 안에서 동작 (safeAreaInsets 정확하게 가져옴).
+        // 안쪽 inner ZStack만 .ignoresSafeArea로 풀스크린.
+        // UI(닫기/셔터)는 GR proxy 안에서 자연스럽게 safe area 안 배치.
         GeometryReader { geo in
             ZStack {
-                // 배경 (시뮬레이터 또는 권한 거부 등 fallback)
-                Color.black
+                // 풀스크린 카메라 + 가이드
+                ZStack {
+                    Color.black
 
-                // 1) 카메라 프리뷰
-                if manager.isReady {
-                    CameraPreviewView(session: manager.session)
-
-                    // 2) 자세 가이드 오버레이 (STEP 배지 포함)
-                    PoseGuideOverlay(view: view, step: step)
-                } else if let msg = manager.errorMessage {
-                    VStack(spacing: AppSpacing.s3) {
-                        Image(systemName: "camera.metering.unknown")
-                            .font(.system(size: 44, weight: .light))
-                            .foregroundStyle(Color.white.opacity(0.8))
-                        Text(msg)
-                            .font(.appCallout)
-                            .foregroundStyle(Color.white)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, AppSpacing.s5)
+                    if manager.isReady {
+                        CameraPreviewView(session: manager.session)
+                        PoseGuideOverlay(view: view, step: step)
+                    } else if let msg = manager.errorMessage {
+                        VStack(spacing: AppSpacing.s3) {
+                            Image(systemName: "camera.metering.unknown")
+                                .font(.system(size: 44, weight: .light))
+                                .foregroundStyle(Color.white.opacity(0.8))
+                            Text(msg)
+                                .font(.appCallout)
+                                .foregroundStyle(Color.white)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, AppSpacing.s5)
+                        }
+                    } else {
+                        ProgressView()
+                            .tint(.white)
                     }
-                } else {
-                    ProgressView()
-                        .tint(.white)
                 }
+                .ignoresSafeArea()
 
-                // 3) 상단 닫기 버튼 — safeAreaInsets.top 명시 적용
+                // UI 오버레이 — safe area 안. proxy 영역 가득 채우고 alignment로 위치.
                 VStack {
                     HStack {
                         Spacer()
@@ -62,17 +63,10 @@ struct CustomCameraView: View {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.system(size: 32))
                                 .symbolRenderingMode(.palette)
-                                .foregroundStyle(Color.white, Color.black.opacity(0.45))
+                                .foregroundStyle(Color.white, Color.black.opacity(0.55))
                         }
                         .accessibilityLabel("닫기")
-                        .padding(.trailing, AppSpacing.s4)
                     }
-                    .padding(.top, geo.safeAreaInsets.top + AppSpacing.s2)
-                    Spacer()
-                }
-
-                // 4) 하단 셔터 버튼 — safeAreaInsets.bottom 명시 적용
-                VStack {
                     Spacer()
                     Button(action: capture) {
                         ZStack {
@@ -90,10 +84,11 @@ struct CustomCameraView: View {
                     }
                     .disabled(isCapturing || !manager.isReady)
                     .accessibilityLabel("촬영")
-                    .padding(.bottom, geo.safeAreaInsets.bottom + AppSpacing.s5)
+                    .padding(.bottom, AppSpacing.s4)
                 }
+                .padding(.horizontal, AppSpacing.s4)
+                .frame(width: geo.size.width, height: geo.size.height)
             }
-            .ignoresSafeArea()
         }
         .alert("촬영 실패", isPresented: Binding(
             get: { errorMessage != nil },
