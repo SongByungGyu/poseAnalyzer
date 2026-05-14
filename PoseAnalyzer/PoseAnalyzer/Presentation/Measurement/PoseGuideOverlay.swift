@@ -36,10 +36,11 @@ struct PoseGuideOverlay: View {
                     )
 
                 // 2) 점선 실루엣 + 정렬선 + 십자선 + 라벨
+                // 사이즈와 위치는 화면에서 시각적으로 가운데 + 텍스트/셔터와 여유 있게.
                 PoseSilhouetteB(view: view)
                     .frame(
-                        width: proxy.size.width * 0.62,
-                        height: proxy.size.height * 0.72
+                        width: proxy.size.width * 0.55,
+                        height: proxy.size.height * 0.62
                     )
                     .position(
                         x: proxy.size.width * 0.5,
@@ -77,9 +78,10 @@ struct PoseGuideOverlay: View {
     }
 
     /// dim 마스크용 — 실루엣의 bounding 영역 (살짝 padding)
+    /// PoseSilhouetteB의 frame과 동일한 비율 유지.
     private func guideArea(in size: CGSize) -> some Shape {
-        let w = size.width * 0.62
-        let h = size.height * 0.72
+        let w = size.width * 0.55
+        let h = size.height * 0.62
         return RoundedRectangle(cornerRadius: 60, style: .continuous)
             .size(width: w * 1.10, height: h * 1.06)
             .offset(x: (size.width - w * 1.10) / 2,
