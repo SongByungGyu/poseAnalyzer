@@ -186,109 +186,8 @@ private struct PoseSilhouetteB: View {
         }
     }
 
-    // MARK: plumb-line 작은 라벨 ("정렬선")
-
-    private func plumbLineLabel(scale: CGFloat) -> some View {
-        Text("정렬선")
-            .font(.system(size: 10, weight: .bold))
-            .foregroundStyle(Color.brandMint)
-            .padding(.horizontal, 9)
-            .padding(.vertical, 3)
-            .background(
-                Capsule()
-                    .fill(Color.brandMint.opacity(0.16))
-                    .overlay(Capsule().strokeBorder(Color.brandMint.opacity(0.6), lineWidth: 0.8))
-            )
-            .position(x: 156 * scale, y: 232 * scale)
-    }
-
-    // MARK: 십자선 마커
-
-    private struct Crosshair: View {
-        let center: CGPoint   // viewBox 좌표 (200×470 기준)
-        let size: CGFloat     // unscaled
-        let scale: CGFloat
-        var body: some View {
-            Path { p in
-                p.move(to: CGPoint(x: -size, y: 0));  p.addLine(to: CGPoint(x: size, y: 0))
-                p.move(to: CGPoint(x: 0, y: -size));  p.addLine(to: CGPoint(x: 0, y: size))
-            }
-            .stroke(Color.brandMint, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
-            .frame(width: size * 2, height: size * 2)
-            .position(x: center.x * scale, y: center.y * scale)
-        }
-    }
-
-    @ViewBuilder
-    private func crosshairs(scale: CGFloat) -> some View {
-        let crosses: [(CGPoint, CGFloat)] = {
-            switch view {
-            case .front:
-                // 무릎/발목 좌표를 다리 외곽의 중심선으로 조정 (안쪽 모임 fix)
-                return [
-                    (CGPoint(x: 84,  y: 56), 6),    // 좌 귀
-                    (CGPoint(x: 116, y: 56), 6),    // 우 귀
-                    (CGPoint(x: 48,  y: 116), 8),   // 좌 어깨
-                    (CGPoint(x: 152, y: 116), 8),   // 우 어깨
-                    (CGPoint(x: 58,  y: 216), 8),   // 좌 골반
-                    (CGPoint(x: 142, y: 216), 8),   // 우 골반
-                    (CGPoint(x: 64,  y: 380), 8),   // 좌 무릎 (다리 중심)
-                    (CGPoint(x: 136, y: 380), 8),   // 우 무릎 (다리 중심)
-                    (CGPoint(x: 57,  y: 455), 8),   // 좌 발목
-                    (CGPoint(x: 143, y: 455), 8),   // 우 발목
-                ]
-            case .side:
-                return [
-                    (CGPoint(x: 118, y: 64),  8),   // 귀
-                    (CGPoint(x: 118, y: 140), 8),   // 어깨
-                    (CGPoint(x: 118, y: 246), 8),   // 엉덩이
-                    (CGPoint(x: 118, y: 340), 8),   // 무릎
-                    (CGPoint(x: 118, y: 450), 8),   // 발목
-                ]
-            }
-        }()
-        ZStack {
-            ForEach(0..<crosses.count, id: \.self) { i in
-                let (pt, sz) = crosses[i]
-                Crosshair(center: pt, size: sz, scale: scale)
-            }
-        }
-    }
-
-    // MARK: 측면 관절 한글 라벨
-
-    /// 측면 라벨은 실루엣 외부에 배치 — anchor에 따라 좌측/우측 빈 영역.
-    /// 라벨 좌표는 viewBox 경계에 가깝게 잡고 .frame + alignment로 외부 정렬.
-    private func sideJointLabels(scale: CGFloat) -> some View {
-        ZStack {
-            // 좌측 라벨 (실루엣 좌측 외부)
-            label("귀",     at: CGPoint(x: 76,  y: 68),  scale: scale, anchor: .trailing)
-            label("어깨",   at: CGPoint(x: 76,  y: 140), scale: scale, anchor: .trailing)
-            label("엉덩이", at: CGPoint(x: 88,  y: 246), scale: scale, anchor: .trailing)
-            // 우측 라벨 (실루엣 우측 외부)
-            label("무릎",   at: CGPoint(x: 144, y: 340), scale: scale, anchor: .leading)
-            label("발목",   at: CGPoint(x: 144, y: 450), scale: scale, anchor: .leading)
-        }
-    }
-
-    /// 라벨을 anchor에 정확히 맞춰 위치.
-    /// - trailing: text의 우측 edge가 pt.x에 위치 (좌측 영역에 라벨 표시)
-    /// - leading:  text의 좌측 edge가 pt.x에 위치 (우측 영역에 라벨 표시)
-    private func label(_ text: String, at pt: CGPoint, scale: CGFloat, anchor: HorizontalAlignment) -> some View {
-        let frameWidth: CGFloat = 60
-        let isTrailing = (anchor == .trailing)
-        return Text(text)
-            .font(.system(size: 10, weight: .semibold))
-            .foregroundStyle(Color.white.opacity(0.85))
-            .frame(width: frameWidth, alignment: isTrailing ? .trailing : .leading)
-            // .position이 frame center에 위치하므로, anchor에 맞게 frameWidth/2 만큼 보정.
-            // trailing: frame center를 pt.x - frameWidth/2로 → frame 우측 edge가 pt.x
-            // leading:  frame center를 pt.x + frameWidth/2로 → frame 좌측 edge가 pt.x
-            .position(
-                x: pt.x * scale + (isTrailing ? -frameWidth / 2 : frameWidth / 2),
-                y: pt.y * scale
-            )
-    }
+    // 보조 가이드 요소(정렬선/plumb-line/십자선/관절 라벨)는 디자인 단순화로 제거됨.
+    // 디자인 원본은 docs/design/swift/PoseGuideOverlay.swift에 보존.
 }
 
 // MARK: - Body Shape (viewBox 200×470 좌표를 rect로 매핑)
@@ -377,34 +276,6 @@ private struct BodyShape: Shape {
                        control1: pt(102, 32),
                        control2: pt(108, 28))
             p.closeSubpath()
-        }
-        return p
-    }
-}
-
-// MARK: - Alignment Lines Shape (정면: 어깨/골반 수평선, 측면: 척추 plumb-line)
-
-private struct AlignmentLinesShape: Shape {
-    let view: SessionView
-    private static let viewBox = CGSize(width: 200, height: 470)
-
-    func path(in rect: CGRect) -> Path {
-        let sx = rect.width / Self.viewBox.width
-        let sy = rect.height / Self.viewBox.height
-        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-            CGPoint(x: x * sx, y: y * sy)
-        }
-
-        var p = Path()
-        switch view {
-        case .front:
-            // 어깨 + 골반 수평선
-            p.move(to: pt(48, 116));  p.addLine(to: pt(152, 116))
-            p.move(to: pt(58, 216));  p.addLine(to: pt(142, 216))
-        case .side:
-            // 귀–어깨–엉덩이–무릎–발목 수직 plumb-line
-            p.move(to: pt(118, 64))
-            p.addLine(to: pt(118, 450))
         }
         return p
     }

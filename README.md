@@ -12,11 +12,13 @@
 
 - **2장 사진 분석**: 정면 + 측면 사진을 한 번에 입력
 - **8가지 자세 자동 판정**: 거북목 · 라운드숄더 · 흉추 후만증 · 골반 전방경사 · 무릎 과신전 · 척추측만 · 머리 좌우 기울기 · 무릎 X자/O자
-- **관절 시각화**: Vision으로 추출한 관절 좌표를 사진 위에 점·선으로 오버레이
+- **커스텀 카메라**: AVCaptureSession 기반, 자세 가이드 실루엣 오버레이
+- **관절 시각화**: Vision으로 추출한 관절 좌표를 결과 화면 사진 위에 점·선으로 오버레이
 - **좌우 비대칭 분석**: 어깨/골반 좌우 높이차 (키 입력 시 cm 단위)
 - **직전 대비 변화 추적**: 측정 결과의 시간에 따른 변화량 표시
 - **추이 그래프**: 자세별 시간축 그래프 (Swift Charts)
 - **라이트/다크모드 1급 지원**
+- **브랜드 일관성**: 인디고 그라디언트 스플래시, 정렬 컬럼 모티프 앱 아이콘
 
 ---
 
@@ -25,18 +27,19 @@
 ### 언어 / 플랫폼
 - **Swift** 5.9+
 - **SwiftUI** (선언형 UI)
-- **iOS 17.0+**
+- **iOS 17.0+** (Xcode 16+ 권장)
 
 ### 사용 프레임워크 (모두 Apple 표준, 외부 라이브러리 0개)
 
 | 프레임워크 | 용도 |
 |------------|------|
 | **Vision** | 인체 관절 자동 인식 (`VNDetectHumanBodyPoseRequest`) |
+| **AVFoundation** | 커스텀 카메라 세션 (`AVCaptureSession`, `AVCapturePhotoOutput`) |
 | **SwiftData** | 로컬 저장 (측정 기록, 사용자 프로필) |
 | **Swift Charts** | 추이 그래프 (iOS 16+) |
-| **SwiftUI Canvas** | 관절 점·선 오버레이 |
+| **SwiftUI Canvas** | 관절 점·선 오버레이, 브랜드 마크 |
 | **PhotosUI** | 사진 라이브러리 선택 (`PhotosPicker`) |
-| **AVFoundation / UIKit** | 카메라 촬영 (`UIImagePickerController`) |
+| **UIKit** | `UIImagePickerController` 대안, 권한 처리 |
 | **Observation** | `@Observable` 기반 ViewModel |
 
 > **외부 의존성 0개** — CocoaPods, SPM 외부 패키지 미사용. Apple 표준 프레임워크만으로 구현.
@@ -91,7 +94,7 @@
 ```
 PoseAnalyzer/
 ├── App/
-│   ├── PoseAnalyzerApp.swift          # 앱 진입점
+│   ├── PoseAnalyzerApp.swift          # 앱 진입점 (LaunchView → AppTabView)
 │   └── AppDependencies.swift          # DI 컨테이너
 │
 ├── Domain/                            # 핵심 도메인 (UI 무관)
@@ -110,16 +113,34 @@ PoseAnalyzer/
 │
 ├── Presentation/
 │   ├── DesignSystem/                  # AppColor, AppFont, AppSpacing
-│   ├── Common/Components/             # StatusBadge, AppButton, AppCard 등
+│   ├── Common/Components/             # StatusBadge, AppButton, AppCard, AppToast 등
 │   ├── Home/                          # HomeView + HomeViewModel
 │   ├── Measurement/                   # MeasurementWizardView (3-step) + ViewModel
+│   │   ├── CameraSessionManager.swift # AVCaptureSession 관리
+│   │   ├── CameraPreviewView.swift    # AVCaptureVideoPreviewLayer SwiftUI 래퍼
+│   │   ├── CustomCameraView.swift     # 커스텀 카메라 화면 + 셔터 + 닫기
+│   │   ├── PoseGuideOverlay.swift     # 자세 가이드 실루엣 (Shape protocol)
+│   │   ├── PhotoInputSheet.swift      # 카메라/라이브러리 선택 시트
+│   │   ├── PhotoLibraryPicker.swift   # PhotosPicker 래퍼
+│   │   ├── WizardStepView.swift       # 정면/측면 사진 입력 단계
+│   │   ├── WizardHeightStepView.swift # 키 입력 단계
+│   │   ├── AnalyzingView.swift        # 분석 중 (breathing pulse)
+│   │   └── MeasurementWizardView.swift
 │   ├── Result/                        # AnalysisResultView + PoseOverlayView
 │   ├── History/                       # HistoryListView + TrendView (Swift Charts)
 │   ├── Settings/                      # SettingsView
+│   ├── LaunchView.swift               # 인디고 스플래시 (마크 + 워드마크)
 │   └── AppTabView.swift               # 측정/기록 탭
 │
-└── Support/Utils/
-    └── GeometryMath.swift             # 각도/거리/기울기 계산 (TDD)
+├── Support/Utils/
+│   ├── GeometryMath.swift             # 각도/거리/기울기 계산 (TDD)
+│   └── AppPermissions.swift           # 카메라 권한 헬퍼
+│
+├── Assets.xcassets/
+│   ├── AppIcon.appiconset/            # 9 사이즈 PNG ("Aligned column" 마크)
+│   └── LaunchBackground.colorset/     # 인디고 #3B5BDB (LaunchScreen용)
+│
+└── LaunchScreen.storyboard            # 콜드 스타트 인디고 화면
 ```
 
 ---
@@ -143,15 +164,39 @@ PoseAnalyzer/
 
 ---
 
+## 📸 측정 흐름
+
+1. **홈** → "측정 시작" CTA
+2. **Step 1 / 3**: 정면 사진 — 카메라(커스텀) 또는 라이브러리
+3. **Step 2 / 3**: 측면 사진
+4. **Step 3 / 3**: 키 입력 (선택, 한 번 입력하면 다음에 자동 적용)
+5. **분석 중**: 두 사진 병렬 Vision 호출 + 8개 자세 평가 + 비대칭 분석
+6. **결과 화면**: 사진 + 관절 오버레이 + 8개 자세 카드 + 비대칭 + 직전 비교
+7. **저장** → 토스트 + 자동 dismiss → 홈으로 복귀, 기록 탭에 즉시 반영
+
+### 커스텀 카메라
+- AVCaptureSession 기반 라이브 프리뷰
+- 자세별 가이드 실루엣 오버레이 (정면/측면 다른 실루엣)
+- STEP 배지 + 안내 텍스트
+- safe area 정확히 적용된 닫기/셔터 버튼
+
+---
+
 ## 🎨 디자인 시스템
 
 - **브랜드 컬러**: Pose Indigo `#3B5BDB`
 - **상태 컬러**: 정상 `#22A06B` · 주의 `#D9A106` · 의심 `#E0683A` · 측정 불가 `#8A94A6`
-- **타입**: Pretendard (한글 iOS 표준) — System Font fallback
+- **타입**: Pretendard (한글 iOS 표준) — 현재는 System Font fallback
 - **톤**: 합니다체 (중립 관찰자 톤). "우측 어깨가 1.8cm 높음" 같은 측정 도구 톤
 - **접근성**: 색만 의존하지 않고 아이콘+텍스트 병기, VoiceOver 한국어 label
+- **앱 아이콘**: "Aligned column" 마크 — 머리 + 어깨 바 + 척추 컬럼 + 골반 바 + mint 정렬 도트
+- **스플래시**: 인디고 그라디언트 풀블리드, 마크 + 워드마크 + 캡션
 
 자세한 디자인 시스템 → [`docs/design/README.md`](docs/design/README.md)
+
+디자인 핸드오프 자료:
+- [`docs/design/swift/PoseGuideOverlay.swift`](docs/design/swift/) — 카메라 가이드 디자인 원본
+- [`docs/design/exports/`](docs/design/exports/) — 앱 아이콘 + 스플래시 핸드오프
 
 ---
 
@@ -175,14 +220,19 @@ xcodebuild test \
 
 ### 요구 사항
 - Xcode 16+
-- iOS 17.0+ 실기기 (시뮬레이터는 일부 Xcode 버전에서 Vision 모델 누락 가능)
+- iOS 17.0+ 실기기 권장 (시뮬레이터는 일부 Xcode 버전에서 Vision 모델 누락 가능)
 - Apple Developer 계정 (실기기 배포 시 Automatic Signing)
 
 ### 실행
 1. `PoseAnalyzer.xcodeproj` 열기
 2. Signing & Capabilities → Team 선택
-3. Run destination → 실기기 선택
+3. Run destination → 실기기 선택 (카메라 기능 검증용)
 4. `⌘R`
+
+### 시뮬레이터 테스트
+- 카메라 미지원 → 라이브러리에서 사진 입력만 가능
+- 사진 추가: `xcrun simctl addmedia <UDID> <path-to-image>`
+- Vision human pose 모델은 시뮬레이터 버전에 따라 누락 가능 → 안 되면 iOS 18.2 시뮬레이터 또는 실기기
 
 ---
 
@@ -198,9 +248,15 @@ xcodebuild test \
 | **Plan 2c** | 결과 화면 + 기록 + 추이 + 설정 | `plan-2c-result-history-complete` |
 | **Plan 2d** | UI 테스트 + 1차 MVP 완성 | `poseanalyzer-mvp-v1.0` |
 
+이후 추가 다듬기:
+- 카메라 흐름 커스텀화 (AVCaptureSession + 가이드 오버레이)
+- 디자인 시스템 핸드오프 통합 (앱 아이콘 + 스플래시)
+- 다크 모드 잔존 효과 fix
+- 미세 정렬 / safe area / 토스트 등
+
 각 plan은 독립적으로 working build를 산출. 단위 테스트가 회귀 없이 모두 통과하는 상태로 유지.
 
-자세한 plan → [`docs/plans/`](docs/plans/)  
+자세한 plan → [`docs/plans/`](docs/plans/)
 디자인 스펙 → [`docs/specs/2026-05-13-pose-analyzer-design.md`](docs/specs/2026-05-13-pose-analyzer-design.md)
 
 ---
@@ -209,9 +265,11 @@ xcodebuild test \
 
 - **영상 기반 동적 자세 분석**: 스쿼트 깊이/속도, 러닝 보폭/케이던스 등
 - `MotionAnalyzer` 프로토콜은 1차에서 인터페이스만 정의 — 구현체 추가만 하면 됨
-- 실시간 카메라 프레임 처리 (`AVCaptureSession` + Vision Sequence)
+- 실시간 카메라 프레임 처리 (`AVCaptureSession` + Vision Sequence) — B-1 인프라 재사용
+- 카메라 가이드 실루엣 위에 실시간 관절 트래킹 + 자동 촬영 (B-2)
 - 임계값 사용자 튜닝 UI
 - 정기 측정 알림
+- Pretendard 폰트 번들
 
 ---
 
