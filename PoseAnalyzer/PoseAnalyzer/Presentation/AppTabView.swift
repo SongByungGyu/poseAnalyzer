@@ -13,7 +13,9 @@ struct AppTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // 측정 탭 (Plan 2b에서 채움)
-            HomeView()
+            NavigationStack {
+                HomeView()
+            }
                 .tabItem {
                     Image(systemName: "camera.fill")
                     Text("측정")
