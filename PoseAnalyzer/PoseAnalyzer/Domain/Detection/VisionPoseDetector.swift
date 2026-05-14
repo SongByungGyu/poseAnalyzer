@@ -11,15 +11,18 @@ final class VisionPoseDetector: PoseDetector {
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
 
         return try await withCheckedThrowingContinuation { continuation in
+            // continuation 중복 resume 방지 (Vision이 perform throw + completionHandler 두 경로로 resume 호출하는 경우)
+            let resumer = ContinuationResumer<PoseFrame>(continuation: continuation)
+
             let request = VNDetectHumanBodyPoseRequest { request, error in
                 if let error = error {
-                    continuation.resume(throwing: PoseDetectionError.visionFailed(message: error.localizedDescription))
+                    resumer.resume(throwing: PoseDetectionError.visionFailed(message: error.localizedDescription))
                     return
                 }
 
                 guard let observations = request.results as? [VNHumanBodyPoseObservation],
                       !observations.isEmpty else {
-                    continuation.resume(throwing: PoseDetectionError.noPersonDetected)
+                    resumer.resume(throwing: PoseDetectionError.noPersonDetected)
                     return
                 }
 
@@ -39,9 +42,9 @@ final class VisionPoseDetector: PoseDetector {
                     let frame = try Self.makeFrame(
                         from: chosen, view: view, imageSize: image.size
                     )
-                    continuation.resume(returning: frame)
+                    resumer.resume(returning: frame)
                 } catch {
-                    continuation.resume(throwing: PoseDetectionError.visionFailed(message: "관절 추출 실패: \(error.localizedDescription)"))
+                    resumer.resume(throwing: PoseDetectionError.visionFailed(message: "관절 추출 실패: \(error.localizedDescription)"))
                 }
             }
 
@@ -49,7 +52,7 @@ final class VisionPoseDetector: PoseDetector {
             do {
                 try handler.perform([request])
             } catch {
-                continuation.resume(throwing: PoseDetectionError.visionFailed(message: error.localizedDescription))
+                resumer.resume(throwing: PoseDetectionError.visionFailed(message: error.localizedDescription))
             }
         }
     }
@@ -87,6 +90,36 @@ final class VisionPoseDetector: PoseDetector {
         let width = (xs.max() ?? 0) - (xs.min() ?? 0)
         let height = (ys.max() ?? 0) - (ys.min() ?? 0)
         return width * height
+    }
+}
+
+// MARK: - Continuation Resumer (한 번만 resume 보장)
+
+/// Vision의 perform()이 throw와 completionHandler 양쪽에서 호출될 수 있어
+/// continuation을 한 번만 resume하도록 lock으로 보호.
+private final class ContinuationResumer<T>: @unchecked Sendable {
+    private let continuation: CheckedContinuation<T, Error>
+    private var didResume = false
+    private let lock = NSLock()
+
+    init(continuation: CheckedContinuation<T, Error>) {
+        self.continuation = continuation
+    }
+
+    func resume(returning value: T) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !didResume else { return }
+        didResume = true
+        continuation.resume(returning: value)
+    }
+
+    func resume(throwing error: Error) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !didResume else { return }
+        didResume = true
+        continuation.resume(throwing: error)
     }
 }
 
