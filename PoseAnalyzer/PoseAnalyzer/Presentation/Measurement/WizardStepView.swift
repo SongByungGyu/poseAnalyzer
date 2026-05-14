@@ -61,7 +61,7 @@ struct WizardStepView: View {
             }
         }
         .sheet(isPresented: $isInputSheetPresented) {
-            PhotoInputSheet(isPresented: $isInputSheetPresented, onPicked: onPicked)
+            PhotoInputSheet(isPresented: $isInputSheetPresented, view: view, onPicked: onPicked)
                 .presentationDetents([.height(320)])
                 .presentationDragIndicator(.hidden)
         }

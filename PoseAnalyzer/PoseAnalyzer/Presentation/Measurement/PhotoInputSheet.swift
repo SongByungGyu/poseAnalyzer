@@ -6,6 +6,7 @@ import PhotosUI
 struct PhotoInputSheet: View {
 
     @Binding var isPresented: Bool
+    let view: SessionView    // 카메라 가이드 (정면/측면) 결정용
     var onPicked: (UIImage) -> Void
 
     @State private var showLibrary = false
@@ -31,12 +32,12 @@ struct PhotoInputSheet: View {
                 AppButton(
                     variant: .primary,
                     size: .large,
-                    isDisabled: !CameraImagePicker.isAvailable,
+                    isDisabled: !CustomCameraView.isAvailable,
                     action: { handleCameraButton() }
                 ) {
                     HStack(spacing: 8) {
                         Image(systemName: "camera.fill")
-                        Text(CameraImagePicker.isAvailable ? "카메라로 촬영" : "카메라 사용 불가 (시뮬레이터)")
+                        Text(CustomCameraView.isAvailable ? "카메라로 촬영" : "카메라 사용 불가 (시뮬레이터)")
                     }
                 }
 
@@ -71,7 +72,8 @@ struct PhotoInputSheet: View {
             Task { await loadSelected(item: item) }
         }
         .fullScreenCover(isPresented: $showCamera) {
-            CameraImagePicker(
+            CustomCameraView(
+                view: view,
                 onPicked: { image in
                     showCamera = false
                     isPresented = false
