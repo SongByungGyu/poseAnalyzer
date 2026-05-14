@@ -23,6 +23,14 @@ struct HomeView: View {
         .background(Color.bgCanvas)
         .navigationTitle("PoseAnalyzer")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink(destination: SettingsView()) {
+                    Image(systemName: "gearshape")
+                        .foregroundStyle(Color.brandPrimary)
+                }
+            }
+        }
         .onAppear {
             if viewModel == nil {
                 viewModel = HomeViewModel(sessionRepository: dependencies.sessionRepository)
