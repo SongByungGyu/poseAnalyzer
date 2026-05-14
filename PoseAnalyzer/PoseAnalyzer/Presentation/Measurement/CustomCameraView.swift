@@ -24,72 +24,82 @@ struct CustomCameraView: View {
     @State private var isCapturing = false
     @State private var errorMessage: String?
 
+    /// 현재 활성 keyWindow의 safe area inset (fullScreenCover/GR이 inset을 못 잡는 경우 fallback)
+    private var topSafeArea: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.top ?? 50
+    }
+    private var bottomSafeArea: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.bottom ?? 30
+    }
+
     var body: some View {
-        // GR은 safe area 안에서 동작 (safeAreaInsets 정확하게 가져옴).
-        // 안쪽 inner ZStack만 .ignoresSafeArea로 풀스크린.
-        // UI(닫기/셔터)는 GR proxy 안에서 자연스럽게 safe area 안 배치.
-        GeometryReader { geo in
+        ZStack {
+            // 풀스크린 카메라 + 가이드
             ZStack {
-                // 풀스크린 카메라 + 가이드
-                ZStack {
-                    Color.black
+                Color.black
 
-                    if manager.isReady {
-                        CameraPreviewView(session: manager.session)
-                        PoseGuideOverlay(view: view, step: step)
-                    } else if let msg = manager.errorMessage {
-                        VStack(spacing: AppSpacing.s3) {
-                            Image(systemName: "camera.metering.unknown")
-                                .font(.system(size: 44, weight: .light))
-                                .foregroundStyle(Color.white.opacity(0.8))
-                            Text(msg)
-                                .font(.appCallout)
-                                .foregroundStyle(Color.white)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, AppSpacing.s5)
-                        }
-                    } else {
-                        ProgressView()
-                            .tint(.white)
+                if manager.isReady {
+                    CameraPreviewView(session: manager.session)
+                    PoseGuideOverlay(view: view, step: step)
+                } else if let msg = manager.errorMessage {
+                    VStack(spacing: AppSpacing.s3) {
+                        Image(systemName: "camera.metering.unknown")
+                            .font(.system(size: 44, weight: .light))
+                            .foregroundStyle(Color.white.opacity(0.8))
+                        Text(msg)
+                            .font(.appCallout)
+                            .foregroundStyle(Color.white)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, AppSpacing.s5)
                     }
+                } else {
+                    ProgressView()
+                        .tint(.white)
                 }
-                .ignoresSafeArea()
-
-                // UI 오버레이 — safe area 안. proxy 영역 가득 채우고 alignment로 위치.
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button(action: onCancel) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 32))
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(Color.white, Color.black.opacity(0.55))
-                        }
-                        .accessibilityLabel("닫기")
-                    }
-                    Spacer()
-                    Button(action: capture) {
-                        ZStack {
-                            Circle()
-                                .stroke(Color.white, lineWidth: 4)
-                                .frame(width: 76, height: 76)
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 62, height: 62)
-                            if isCapturing {
-                                ProgressView()
-                                    .tint(Color.brandInk)
-                            }
-                        }
-                    }
-                    .disabled(isCapturing || !manager.isReady)
-                    .accessibilityLabel("촬영")
-                    .padding(.bottom, AppSpacing.s4)
-                }
-                .padding(.horizontal, AppSpacing.s4)
-                .frame(width: geo.size.width, height: geo.size.height)
             }
+            .ignoresSafeArea()
         }
+        .overlay(alignment: .topTrailing) {
+            // 닫기 버튼 — keyWindow safe area 명시적으로 적용
+            Button(action: onCancel) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 32))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.black.opacity(0.55))
+            }
+            .accessibilityLabel("닫기")
+            .padding(.top, topSafeArea + AppSpacing.s2)
+            .padding(.trailing, AppSpacing.s4)
+        }
+        .overlay(alignment: .bottom) {
+            // 셔터 버튼
+            Button(action: capture) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.white, lineWidth: 4)
+                        .frame(width: 76, height: 76)
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 62, height: 62)
+                    if isCapturing {
+                        ProgressView()
+                            .tint(Color.brandInk)
+                    }
+                }
+            }
+            .disabled(isCapturing || !manager.isReady)
+            .accessibilityLabel("촬영")
+            .padding(.bottom, bottomSafeArea + AppSpacing.s4)
+        }
+        .ignoresSafeArea()
         .alert("촬영 실패", isPresented: Binding(
             get: { errorMessage != nil },
             set: { if !$0 { errorMessage = nil } }
